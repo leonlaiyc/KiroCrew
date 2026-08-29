@@ -16,7 +16,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from kiro_crew.dashboard.chat_utils import effective_session_key, slot_history_key
+from kiro_crew.dashboard.chat_utils import note_authorization_session_key, slot_history_key
 from kiro_crew.execution_context import STRICTEST_MEMORY_MODE
 from kiro_crew.history import METADATA_LINE_CORRUPT
 
@@ -383,19 +383,25 @@ def paired_window_snapshot(
 def routing_snapshot(slot: _ChatSlot) -> tuple[str, str]:
     """``(live_session, history_key)``, both taken from ONE observation of the routing."""
     # Authorization and the write target must come from ONE observation of the
-    # routing. Both keys derive from ``slot.linked_session_key``, which the event
-    # loop rebinds with no running gate, so reading it per row -- or again when
-    # the write target is resolved -- authorizes rows against one session and
-    # then writes the file of another. Snapshot-then-confirm with the same
-    # bounded retry the window pair uses. The two keys
+    # routing. The write target derives from ``slot.linked_session_key`` while
+    # the authorization key also includes a refused app-slot binding claim
+    # (``note_authorization_session_key``). The event loop can mutate either
+    # with no running gate, so reading them per row -- or again when the write
+    # target is resolved -- authorizes rows against one session and then writes
+    # the file of another. Snapshot-then-confirm with the same bounded retry the
+    # window pair uses. The two keys
     # stay DISTINCT: collapsing them would send a channel-born slot the
     # dashboard could not bind to the phantom file ``slot_history_key`` exists
     # to avoid.
     for _ in range(_FLUSH_SNAPSHOT_RETRIES):
         routing = getattr(slot, "linked_session_key", "")
-        live_session = effective_session_key(slot)
+        authorization_claim = getattr(slot, "linked_session_claim", "")
+        live_session = note_authorization_session_key(slot)
         history_key = slot_history_key(slot)
-        if getattr(slot, "linked_session_key", "") == routing:
+        if (
+            getattr(slot, "linked_session_key", "") == routing
+            and getattr(slot, "linked_session_claim", "") == authorization_claim
+        ):
             break
     return live_session, history_key
 

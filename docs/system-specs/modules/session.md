@@ -2550,6 +2550,25 @@ and restore path to share one mutation protocol with in-memory dashboard state.
 The request path chooses the smaller fail-safe rule instead: stale sidecars are
 reversible, while deleting a successor's state is not.
 
+**App-owned slot binding isolation:** `linked_session_key` is session authority,
+not display metadata: chat routes authorize an app against the slot owner and
+then run the turn on the slot's effective session. An app-owned slot therefore
+never carries a linked channel or cron session. The slot attribute refuses the
+binding at the shared mutation boundary (factory arguments, channel-name
+inference, restore, and background injectors all pass through it), emits a
+best-effort SEL denial, and leaves the slot on its own `dashboard:` session. The
+refused key remains as an authorization-only claim, separate from the live route:
+app gates therefore keep refusing the quarantined slot instead of treating the
+failed mutation as an ordinary unbound slot, and note content stamped before the
+attempt is dropped at its late drain/save seams. The claim never selects a
+provider or transcript and is not serialized as a live binding; assigning an
+explicit empty binding clears it.
+The case this closes beyond the name-inference and restore skips: cron
+injection finds its tab by name (`cron-<id>`) and links it to `cron:<id>`, so an
+app that created a slot of that name first would otherwise receive the job's
+session. Unscoped dashboard/channel slots keep the historical auto-bind and
+restore behavior.
+
 ## Slack Thread Linking
 
 Sessions can be linked to Slack threads via `SessionMap` fields
