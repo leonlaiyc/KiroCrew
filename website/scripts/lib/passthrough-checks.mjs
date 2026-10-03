@@ -66,6 +66,7 @@ export const TARGET_SCRIPTS = {
   ko: ['Hangul'],
   ru: ['Cyrillic'],
   'zh-CN': ['Han'],
+  'zh-TW': ['Han'],
 }
 
 /**
@@ -109,11 +110,16 @@ const escapeRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 /**
  * A term is removed only where it stands as a word, so `Git` does not eat the `Git`
  * inside a longer identifier and leave a fragment behind to be scored.
+ *
+ * Longer terms are tried first. Alternation takes the first alternative that matches,
+ * so with glossary order `AWS` would win over `AWS SSM Session Manager` and leave
+ * `SSM Session Manager` behind to be judged as untranslated prose.
  */
-const dntPattern = terms =>
-  (terms.length
-    ? new RegExp(`(?<![\\p{L}\\p{N}])(?:${terms.map(escapeRe).join('|')})(?![\\p{L}\\p{N}])`, 'giu')
-    : null)
+export function dntPattern(terms) {
+  if (!terms.length) return null
+  const alternation = [...terms].sort((a, b) => b.length - a.length).map(escapeRe).join('|')
+  return new RegExp(`(?<![\\p{L}\\p{N}])(?:${alternation})(?![\\p{L}\\p{N}])`, 'giu')
+}
 
 /** Strip every locale-invariant span, then the DNT terms, then collapse whitespace. */
 export function strippedProse(value, dntRe = null) {

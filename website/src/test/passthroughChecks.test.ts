@@ -15,6 +15,7 @@ import {
   FUNCTION_WORDS,
   MIN_WORDS,
   TARGET_SCRIPTS,
+  dntPattern,
   passthroughChecks,
   strippedProse,
   tokenCount,
@@ -213,6 +214,16 @@ describe('stripping', () => {
     // ...but a longer identifier containing it is left whole, so no fragment is scored.
     expect(strippedProse('GitLab is required', /(?<![\p{L}\p{N}])(?:Git)(?![\p{L}\p{N}])/giu))
       .toBe('GitLab is required')
+  })
+
+  it('removes the longest do-not-translate term, whatever the glossary order', () => {
+    // `AWS` is listed first; were it tried first it would leave `SSM Session Manager`
+    // standing as three English words to be scored as untranslated.
+    const dntRe = dntPattern(['AWS', 'AWS SSM Session Manager'])
+    expect(strippedProse('AWS SSM Session Manager', dntRe)).toBe('')
+    expect(flagsScript('AWS SSM Session Manager', 'zh-TW')).toBe(true)
+    expect(passthroughChecks(['AWS', 'AWS SSM Session Manager'])[0]
+      .violates('AWS SSM Session Manager', 'zh-TW')).toBe(false)
   })
 
   it('counts tokens by whitespace, not by punctuation', () => {

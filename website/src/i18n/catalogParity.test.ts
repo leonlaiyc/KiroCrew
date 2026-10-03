@@ -115,26 +115,27 @@ describe('language registry', () => {
     expect(isSupportedLanguage(DEFAULT_LANGUAGE)).toBe(true)
   })
 
-  it('does not add a thirteenth statically bundled catalog', () => {
+  it('does not add a fourteenth authored catalog without re-measuring', () => {
     // The lazy-loading ratchet, as a GATE rather than a sentence.
     //
-    // `index.ts` and `docs/system-specs/modules/config.md` both say catalog #13
-    // belongs behind the `i18next-http-backend` seam, because every catalog ships
-    // to every user whatever language they read (~173 KB gzip each, ~2.0 MB gzip
-    // for the twelve). A doc cannot hold that line: the PR that crosses it is
-    // also the PR that can rewrite the doc, which is exactly how #12 landed in
-    // front of a seam #12 was supposed to trigger.
+    // It held catalog #13 until the lazy-loading seam existed, because every
+    // catalog used to ship to every user whatever language they read (~173 KB
+    // gzip each, ~2.0 MB gzip for twelve). That seam landed in #14228: the
+    // browser entry (`./lazy`) now fetches each non-English catalog as its own
+    // chunk, so #13 (zh-TW) was admitted with its chunk measured on its own and
+    // the first-load path re-measured unchanged.
     //
-    // Raising this number is legitimate ONLY together with the seam, or with a
-    // re-measured figure in `config.md` and a reviewer who accepted the deferral.
-    // The pseudolocale is excluded: it is DEV-only and Rollup drops it from a
-    // production build.
+    // Keep raising this number by hand, one language at a time, each time with
+    // that measurement in the PR: a doc cannot hold the line, because the PR
+    // that crosses it is also the PR that can rewrite the doc. The pseudolocale
+    // is excluded: it is DEV-only and Rollup drops it from a production build.
     const authored = SUPPORTED_LANGUAGES.filter(l => !l.devOnly)
     expect(
       authored.length,
-      'Adding a catalog puts its full weight in every user\'s first load. Land the '
-      + 'lazy-loading seam in i18n/catalogs.ts instead, or re-measure and say why here.',
-    ).toBeLessThanOrEqual(12)
+      'Each catalog is a lazy chunk, not first-load weight, but the gate still asks '
+      + 'for its measurement: build in analyze mode, confirm the new catalog is its '
+      + 'own chunk and the first-load chunks did not grow, and say so here.',
+    ).toBeLessThanOrEqual(13)
   })
 })
 
