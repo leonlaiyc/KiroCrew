@@ -16243,6 +16243,8 @@
         "a_folder_with_no_chats_takes_one_row_instead_of": "Ein Ordner ohne Chats belegt eine Zeile statt zwei, und seine Schaltfläche für einen neuen Chat wandert in die Ordnerzeile",
         "full_titles_on_scroll": "Vollständige Titel beim Scrollen anzeigen",
         "full_titles_on_scroll_description": "Beim Scrollen der Sitzungsliste werden abgeschnittene Titel vollständig darüber angezeigt; sie verschwinden, sobald der Zeiger die Liste verlässt oder kurz nachdem das Scrollen endet",
+        "session_card_preview": "Nachrichtenvorschau auf Sitzungskarten",
+        "session_card_preview_desc": "Zeigt die letzte Nachricht unter dem Titel jeder Sitzung in der Seitenleiste. Ausgeschaltet zeigt eine Karte weiterhin ihre Statuszeile und den Ungelesen-Punkt",
         "content_width": "Inhaltsbreite",
         "context": "Kontext",
         "turns": "Züge",

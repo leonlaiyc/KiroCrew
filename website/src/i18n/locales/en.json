@@ -9131,6 +9131,8 @@
         "a_folder_with_no_chats_takes_one_row_instead_of": "A folder with no chats takes one row instead of two, and its New chat button moves onto the folder's own row",
         "full_titles_on_scroll": "Show Full Titles While Scrolling",
         "full_titles_on_scroll_description": "While you scroll the session list, titles cut off by the sidebar show in full over it; they hide when the pointer leaves or shortly after scrolling stops",
+        "session_card_preview": "Message Preview on Session Cards",
+        "session_card_preview_desc": "Show the last message under each session's title in the sidebar. When off, a card still shows its status line and unread dot",
         "content_width": "Content Width",
         "context": "Context",
         "turns": "Turns",

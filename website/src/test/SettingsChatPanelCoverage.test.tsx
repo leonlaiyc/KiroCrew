@@ -431,6 +431,15 @@ describe('ChatPanel — Messages', () => {
     )
   })
 
+  it('shows the session card preview on by default and stores turning it off', async () => {
+    wrap('sessions')
+    const sw = await settledSwitch('Message Preview on Session Cards')
+    expect(sw).toHaveAttribute('aria-checked', 'true')
+    fireEvent.click(sw)
+    await waitFor(() => expect(storedChat().sessionCardPreview).toBe(false))
+    expect(sw).toHaveAttribute('aria-checked', 'false')
+  })
+
   it('shows topic tags off by default and persists turning them on', async () => {
     wrap('sessions')
     const sw = await settledSwitch('Topic tags')

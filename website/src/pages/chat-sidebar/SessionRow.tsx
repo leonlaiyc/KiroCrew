@@ -18,6 +18,7 @@ import { api } from '../../api/client'
 import { recencyTintShadow } from '../../utils/recencyTint'
 import { toolStatusLabel, type ToolStatusDetail } from '../../utils/toolStatusLabel'
 import { IconButton, IconButtonGroup } from '../../components/ui'
+import { useSessionCardPreview } from '../../hooks/useSessionCardPreview'
 import { useSimplifiedToolNames } from '../../hooks/useSimplifiedToolNames'
 import { useLanguage } from '../../i18n/LanguageProvider'
 import { useImeGuard } from '../../hooks/useImeGuard'
@@ -316,6 +317,7 @@ export const SessionRow = memo(function SessionRow({ view, actions }: SessionRow
   const dispatch = useAppDispatch()
   const ime = useImeGuard()
   const simplifiedToolNames = useSimplifiedToolNames()
+  const showPreview = useSessionCardPreview()
   const uiLang = useLanguage().resolved
   // ── Slot-scoped store reads ──────────────────────────────────────────────
   // Each subscription selects THIS slot's entry, so a write to another slot's
@@ -1577,15 +1579,16 @@ export const SessionRow = memo(function SessionRow({ view, actions }: SessionRow
                 The tail is `last_message`, which is also where the `unread` dot
                 lands — the one marker with no state branch of its own. A row that
                 is unread with nothing said yet still renders the line, because the
-                dot IS the content then. */}
-            {rowState ?? ((s.last_message || unreadDot) ? (
+                dot IS the content then. With the preview setting off the tail is
+                dropped, so the line renders only for that dot. */}
+            {rowState ?? (((showPreview && s.last_message) || unreadDot) ? (
               <div className={ROW_STATUS_LINE_MUTED_CLS}>
                 {unreadDot}
                 {/* `min-w-0` or the ellipsis never renders: this is a flex child, and
                     a flex item's `min-width: auto` floor keeps it at content width
                     instead of letting `truncate` clip it (i18n render gate,
                     layout/ellipsis-with-flex-parent). */}
-                {s.last_message ? <span className="truncate min-w-0">{s.last_message}</span> : null}
+                {showPreview && s.last_message ? <span className="truncate min-w-0" data-testid="session-card-preview">{s.last_message}</span> : null}
               </div>
             ) : null)}
             {s.source_links && s.source_links.length > 0 && (

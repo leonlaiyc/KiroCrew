@@ -641,6 +641,13 @@
       "hint": "Font size for the conversation, in every session: message text, code, tables, suggested replies and the message input. The Compact content width grows to match. Sidebar, session list and the rest of the interface are unaffected."
     },
     {
+      "id": "chat.message-preview-on-session-cards",
+      "label": "Message Preview on Session Cards",
+      "tab": "chat",
+      "route": "/settings/chat/sessions?highlight=chat.message-preview-on-session-cards",
+      "hint": "Show the last message under each session's title in the sidebar. When off, a card still shows its status line and unread dot"
+    },
+    {
       "id": "chat.minimap-location",
       "label": "Minimap location",
       "tab": "chat",
