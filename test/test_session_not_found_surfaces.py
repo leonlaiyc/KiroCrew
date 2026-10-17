@@ -26,7 +26,11 @@ import pytest
 from test_cron_acp_retry import gw_and_cb  # noqa: F401  (fixture)
 
 from kiro_crew.acp.client import AcpError
-from kiro_crew.llm_helpers import SESSION_NOT_FOUND_GIVE_UP_TEXT, SESSION_NOT_FOUND_RETRY_NOTICE
+from kiro_crew.llm_helpers import (
+    CREDENTIAL_RELOAD_RETRY_NOTICE,
+    SESSION_NOT_FOUND_GIVE_UP_TEXT,
+    SESSION_NOT_FOUND_RETRY_NOTICE,
+)
 from kiro_crew.providers.base import EVENT_TOOL_CALL, LLMEvent
 
 
@@ -60,6 +64,70 @@ def _credential_dead() -> AcpError:
     except AcpError as exc:
         return exc
     raise AssertionError("_raise_acp_error did not raise")
+
+
+#: A key and a credential-carrying URL, as a misbehaving credential helper might
+#: echo them into the provider's message.
+_LEAKED_KEY = "AKIAIOSFODNN7EXAMPLE"
+_LEAKED_URL = f"https://evil.example/c?token={_LEAKED_KEY}"
+
+
+def _credential_dead_unredacted() -> AcpError:
+    """A credential-tagged error whose text was never redacted.
+
+    ``_raise_acp_error`` redacts what it raises, so this stands in for any other
+    producer: the give-up line must not depend on that one raise site to scrub
+    the provider's text.
+    """
+    exc = AcpError(
+        f"API Error: Could not load AWS credentials · the helper printed {_LEAKED_KEY} "
+        f"and {_LEAKED_URL}. Check or refresh your AWS credentials and try again."
+        ": {'errorKind': 'cloud_credential_error'}"
+    )
+    exc.credential_reload = True
+    exc.transient = False
+    return exc
+
+
+def _assert_scrubbed_give_up(text: str) -> None:
+    assert "Check or refresh your AWS credentials and try again." in text, text
+    assert _LEAKED_KEY not in text, text
+    assert "evil.example/c" not in text, text
+    assert "errorKind" not in text, text
+
+
+# ── credential give-up text ─────────────────────────────────────────────────
+
+
+@pytest.mark.parametrize("as_str", [False, True], ids=["exception", "stored-string"])
+def test_credential_give_up_text_redacts_and_drops_the_frame_tail(as_str):
+    """The channel hands the helper a stored string, the other surfaces the
+    exception: both come out redacted and without the ``errorKind`` repr."""
+    from kiro_crew.llm_helpers import credential_give_up_text
+
+    exc = _credential_dead_unredacted()
+    text = credential_give_up_text(str(exc) if as_str else exc)
+
+    _assert_scrubbed_give_up(text)
+    assert "[REDACTED" in text, text
+
+
+def test_credential_give_up_text_from_the_real_frame_has_no_tail():
+    from kiro_crew.llm_helpers import credential_give_up_text
+
+    text = credential_give_up_text(_credential_dead())
+
+    assert "errorKind" not in text, text
+    assert text.endswith("Check or refresh your AWS credentials and try again."), text
+
+
+def test_credential_give_up_text_keeps_a_brace_that_is_not_the_frame():
+    """Only the structured ``errorKind`` frame is dropped, not provider prose."""
+    from kiro_crew.llm_helpers import credential_give_up_text
+
+    text = credential_give_up_text("Profile {dev} has no credentials: {expired}")
+
+    assert text.endswith("Profile {dev} has no credentials: {expired}"), text
 
 
 # ── Slack thread ────────────────────────────────────────────────────────────
@@ -174,7 +242,8 @@ async def test_slack_stale_credential_error_recycles_and_replays_once():
     assert provider.turns == 2
     assert "reset:thread1" in sessions.removed, "the stuck process's binding is dropped"
     texts = _visible_texts(slack)
-    assert any(SESSION_NOT_FOUND_RETRY_NOTICE in t for t in texts), texts
+    assert any(CREDENTIAL_RELOAD_RETRY_NOTICE in t for t in texts), texts
+    assert not any(SESSION_NOT_FOUND_RETRY_NOTICE in t for t in texts), texts
     assert any("The answer is 42" in t for t in texts), texts
     assert sessions.replay_gaps == [("open", "thread1"), ("close", "thread1")]
 
@@ -302,6 +371,34 @@ async def test_channel_broken_credential_helper_ends_on_the_providers_remedy():
     assert SESSION_NOT_FOUND_RETRY_NOTICE not in posted
     assert any("Check or refresh your AWS credentials" in p for p in posted)
     assert not any(SESSION_NOT_FOUND_GIVE_UP_TEXT in p for p in posted)
+
+
+@pytest.mark.asyncio
+async def test_channel_credential_give_up_post_is_redacted():
+    """The channel post is read by every member and ``channel.post`` does not
+    redact, so the give-up line must arrive scrubbed."""
+    from test_channel_prompt_busy import FakeSessions, _raising_client
+
+    from kiro_crew import channel as channel_mod
+
+    ch = channel_mod.Channel(id="c1", topic="review")
+    agent = ch.add_agent(role="dev", agent_name="dev")
+    assert agent is not None
+    sessions = FakeSessions(
+        [
+            _raising_client(_credential_dead_unredacted()),
+            _raising_client(_credential_dead_unredacted()),
+        ]
+    )
+
+    task = asyncio.create_task(channel_mod.run_channel_agent(agent, ch, sessions))
+    await ch.post("human", "start the review")
+    await asyncio.wait_for(task, timeout=30)
+
+    posted = [m.content for m in ch.messages if m.from_id == agent.id]
+    give_up = [p for p in posted if "Check or refresh your AWS credentials" in p]
+    assert len(give_up) == 1, posted
+    _assert_scrubbed_give_up(give_up[0])
 
 
 # ── cron (single agent and sequence) ────────────────────────────────────────

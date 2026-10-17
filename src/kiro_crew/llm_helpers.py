@@ -371,17 +371,30 @@ def acp_error_needs_fresh_credentials(exc: BaseException) -> bool:
     return isinstance(exc, AcpError) and getattr(exc, "credential_reload", False) is True
 
 
+#: The structured ``data`` frame the formatter's fallback pastes after the
+#: provider's message (``...try again.: {'errorKind': 'cloud_credential_error'}``).
+#: It is the tag the process recycle already read, not text for a person.
+_RE_ERROR_KIND_TAIL = re.compile(r":\s*\{\s*['\"]errorKind['\"]\s*:[^{}]*\}\s*$")
+
+
 def credential_give_up_text(exc: BaseException | str) -> str:
     """The dead end of a credential failure that the fresh process drew too.
 
     The helper itself is broken (an expired SSO login, a revoked role), so no
     restart or new chat can fix it: the provider's own instruction is the only
-    actionable line, and it is carried verbatim. Each surface appends its own
-    next step.
+    actionable line. Each surface appends its own next step.
+
+    The provider's text is redacted here, so every surface gets the same guard:
+    the dashboard row and the channel post do not redact on their own, and the
+    channel hands over a stored string rather than the exception. The
+    ``errorKind`` frame tail is dropped.
     """
+    said = _RE_ERROR_KIND_TAIL.sub("", str(exc)).strip()
+    said, _ = redact_exfiltration_urls(said)
+    said, _ = redact_credentials(said)
     return (
         "The agent still could not load its cloud credentials after a restart. "
-        f"Fix them first. The provider said: {exc}"
+        f"Fix them first. The provider said: {said}"
     )
 
 

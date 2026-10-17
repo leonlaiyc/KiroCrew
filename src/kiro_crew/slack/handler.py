@@ -112,6 +112,7 @@ from kiro_crew.hooks import (
     safe_read_file_bytes,
 )
 from kiro_crew.llm_helpers import (
+    CREDENTIAL_RELOAD_RETRY_NOTICE,
     SESSION_NOT_FOUND_GIVE_UP_TEXT,
     SESSION_NOT_FOUND_NOT_REPLAYED_TEXT,
     SESSION_NOT_FOUND_RETRY_NOTICE,
@@ -2454,7 +2455,11 @@ async def handle_message(
             _had_error = False
             task.complete()
             await _replay_abandoned(
-                SESSION_NOT_FOUND_RETRY_NOTICE,
+                (
+                    CREDENTIAL_RELOAD_RETRY_NOTICE
+                    if acp_error_needs_fresh_credentials(e)
+                    else SESSION_NOT_FOUND_RETRY_NOTICE
+                ),
                 _CompactionReplay(
                     attempt=_compaction_replay.attempt if _compaction_replay is not None else 0,
                     stop_gen_at_entry=_stop_gen_at_entry,

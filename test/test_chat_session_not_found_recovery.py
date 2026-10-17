@@ -209,6 +209,45 @@ async def test_broken_credential_helper_ends_on_the_providers_remedy(tmp_path, m
 
 
 @pytest.mark.asyncio
+async def test_credential_give_up_row_is_redacted(tmp_path, monkeypatch):
+    """``slot.append`` does not redact, so the dashboard's give-up row must get
+    the provider's text scrubbed and without the ``errorKind`` frame repr."""
+    from kiro_crew.dashboard.chat import _run_chat
+
+    key = "AKIAIOSFODNN7EXAMPLE"
+
+    def _leaky() -> AcpError:
+        # Not built by ``_raise_acp_error``, which redacts on its own: the row
+        # must not rely on that one raise site.
+        exc = AcpError(
+            f"Could not load AWS credentials · the helper printed {key} and "
+            f"https://evil.example/c?token={key}. Check or refresh your AWS "
+            "credentials and try again.: {'errorKind': 'cloud_credential_error'}"
+        )
+        exc.credential_reload = True
+        exc.transient = False
+        return exc
+
+    async def _fail(msg):
+        raise _leaky()
+        yield  # pragma: no cover
+
+    state = _state(tmp_path, monkeypatch)
+    _wire(state, _client(_fail))
+    slot = state.get_or_create_slot("s1")
+    slot._titled = True
+
+    await _run_chat(state, slot, "continue")
+    await _drain(state)
+
+    row = _errors(slot)[-1]
+    assert "Check or refresh your AWS credentials and try again." in row, row
+    assert key not in row, row
+    assert "evil.example/c" not in row, row
+    assert "errorKind" not in row, row
+
+
+@pytest.mark.asyncio
 async def test_stale_credentials_recycle_once_then_land(tmp_path, monkeypatch):
     """The healthy-helper case the fix was built for still lands on the replay."""
     from kiro_crew.dashboard.chat import _run_chat
