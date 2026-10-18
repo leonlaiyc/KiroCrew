@@ -203,6 +203,7 @@ from kiro_crew.slack.format import (  # noqa: F401 - read by the owners
     SLACK_MSG_LIMIT,
     TRUNCATION_NOTICE,
     _convert_tables,
+    escape_mrkdwn,
     extract_options,
     is_wait_identity,
     render_one_for_slack,
@@ -3546,6 +3547,9 @@ async def _request_approval(
         status = "✅ Approved" if outcome == _OUTCOME_APPROVED else "🚫 Rejected"
         title_safe, _ = redact_exfiltration_urls(event.title)
         title_safe, _ = redact_credentials(title_safe)
+        # The title carries model-chosen text (a command line); Slack parses
+        # entity markup in a message's text, so ``<!channel>`` would notify.
+        title_safe = escape_mrkdwn(title_safe)
         await _safe_update(slack, channel, approval_ts, f"🔐 *{title_safe}* — {status}")
 
     return outcome

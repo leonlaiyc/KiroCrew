@@ -1525,6 +1525,8 @@ contract is also shared:
 `DISPATCHED`, `BUSY`, or `UNAVAILABLE`; BUSY is an ordinary durable retry of the
 same claimed wake, while only UNAVAILABLE terminates the monitor.
 
+Every Slack approval card, background or native (`handler._request_approval`), shows the request's tool title and purpose redacted and then `escape_mrkdwn`-escaped: in the block footer (`_build_approval_blocks`), in the top-level fallback text, and on the answered card. Both carry model-chosen text (an execute call's title is its command line), and Slack parses entity markup in a `mrkdwn` field and in a message's `text`, so a command such as `echo "<!channel>"` would otherwise notify the channel. `test/test_slack_approval_title_markup.py` pins each sink.
+
 Background task approvals (subagent, cron, task runner, and AutoNudge) post approval buttons to Slack DM via `_interactive_approval()`, racing with dashboard approval:
 
 1. Posts ✅ Approve / 🚫 Reject buttons to owner DM

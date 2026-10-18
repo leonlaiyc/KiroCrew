@@ -2121,11 +2121,13 @@ def test_a_patch_of_the_facade_reaches_an_owner_function() -> None:
         mp.setattr(handler, "_owner_id", "UPATCHED")
         assert handler.is_allowed_user("UPATCHED") is True
     with pytest.MonkeyPatch.context() as mp:
-        mp.setattr(handler, "redact_credentials", lambda text: ("<scrubbed>", []))
+        # No markup characters in the sentinel: the card escapes the title for
+        # Slack after redacting it, which would rewrite ``<`` and ``>``.
+        mp.setattr(handler, "redact_credentials", lambda text: ("SCRUBBED", []))
         blocks = handler._build_approval_blocks(
             SimpleNamespace(request_id=1, title="t", tool_input="", tool_purpose="")
         )
-        assert "<scrubbed>" in json.dumps(blocks)
+        assert "SCRUBBED" in json.dumps(blocks)
     with pytest.MonkeyPatch.context() as mp:
         mp.setattr(handler, "is_yolo_mode", lambda: True)
         assert handler.is_yolo_mode() is True

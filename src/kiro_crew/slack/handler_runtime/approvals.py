@@ -34,6 +34,7 @@ if TYPE_CHECKING:
         _linked_approvals,
         add_trusted_session,
         effective_session_key,
+        escape_mrkdwn,
         is_allowed_user,
         logger,
         redact_credentials,
@@ -336,13 +337,16 @@ def _build_approval_blocks(event: LLMEvent, is_dm: bool = True, source: str = ""
     blocks: list[dict] = []
 
     tag = f"[{source}] " if source else ""
+    # The title and purpose carry model-chosen text (a command line, the
+    # model's own description of it), and the footer is a mrkdwn field: Slack
+    # would turn ``<!channel>`` or ``<@U…>`` in either into a live mention.
     title_safe, _ = redact_exfiltration_urls(event.title)
     title_safe, _ = redact_credentials(title_safe)
-    footer = f":lock: {tag}*{title_safe}*"
+    footer = f":lock: {tag}*{escape_mrkdwn(title_safe)}*"
     if event.tool_purpose:
         purpose, _ = redact_exfiltration_urls(event.tool_purpose)
         purpose, _ = redact_credentials(purpose)
-        footer += f" — {purpose}"
+        footer += f" — {escape_mrkdwn(purpose)}"
 
     # When full tool_input is available, show a simple header and the
     # complete command in a code block below.

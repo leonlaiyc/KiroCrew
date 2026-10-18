@@ -34,6 +34,7 @@ if TYPE_CHECKING:
         _slot_is_trusted,
         command_invokes_git,
         dashboard_slot_key,
+        escape_mrkdwn,
         is_read_only_bash,
         logger,
         name_grant,
@@ -406,6 +407,9 @@ def _interactive_approval(
                 blocks = _build_approval_blocks(event, is_dm=is_dm, source=source)
                 title_safe, _ = redact_exfiltration_urls(event.title)
                 title_safe, _ = redact_credentials(title_safe)
+                # Model-chosen text in the top-level text, which Slack parses
+                # for entity markup; the resolved card below reuses it too.
+                title_safe = escape_mrkdwn(title_safe)
                 fallback = f"🔐 [{source}] Approve: {title_safe}?"
                 approval_ts = await self.slack.post_blocks(
                     channel, blocks, fallback, thread_ts  # type: ignore[arg-type]
