@@ -1904,6 +1904,19 @@ def _string_identifier(body: dict, field: str) -> tuple[str, web.Response | None
     )
 
 
+def _invalid_enabled_response() -> web.Response:
+    """The 400 for a toggle whose ``enabled`` is not a JSON boolean.
+
+    The toggles branch on the flag's truthiness, so the string ``"false"`` would
+    leave a server or tool switched ON while the response echoed ``"false"``
+    back, and ``disabledTools`` is what kiro-cli enforces. Refuse rather than
+    coerce: which value the caller meant is not ours to guess.
+    """
+    return web.json_response(
+        {"error": "enabled must be a boolean", "code": "invalid_enabled"}, status=400
+    )
+
+
 async def api_mcp_toggle(request: web.Request) -> web.Response:
     """POST /api/mcp/toggle — enable or disable an MCP server globally.
 
@@ -1927,6 +1940,8 @@ async def api_mcp_toggle(request: web.Request) -> web.Response:
     if err is not None:
         return err
     enabled = body.get("enabled", True)
+    if not isinstance(enabled, bool):
+        return _invalid_enabled_response()
     if not name:
         return web.json_response({"error": "name is required"}, status=400)
 
@@ -2032,6 +2047,8 @@ async def api_mcp_toggle_tool(request: web.Request) -> web.Response:
     if err is not None:
         return err
     enabled = body.get("enabled", True)
+    if not isinstance(enabled, bool):
+        return _invalid_enabled_response()
     if not server or not tool:
         return web.json_response({"error": "server and tool are required"}, status=400)
 
@@ -2101,6 +2118,8 @@ async def api_mcp_toggle_all(request: web.Request) -> web.Response:
         return body_err
     assert body is not None  # read_bounded_json returns (dict, None) on success
     enabled = body.get("enabled", True)
+    if not isinstance(enabled, bool):
+        return _invalid_enabled_response()
 
     # Ownership BEFORE the first mutation: every flag lands in the user-level
     # registry ahead of the rendered spec, so a refusal found at that last

@@ -1264,3 +1264,45 @@ class TestGatewayEnableErrors:
         assert body["code"] == "mcp_apply_failed"
         outcomes = [c.kwargs.get("outcome") for c in sel.log_api_access.call_args_list]
         assert "error" in outcomes
+
+
+# ── non-boolean ``enabled`` on every toggle ─────────────────────────────
+
+# The toggles branch on truthiness, so each of these would have switched the
+# server or tool ON (or, for the falsy ones, OFF) whatever the caller meant,
+# while the response echoed the value back as if it were applied.
+NON_BOOLEAN_FLAGS = ["false", "true", "", 0, 1, None, [], {}]
+_INVALID_ENABLED = {"error": "enabled must be a boolean", "code": "invalid_enabled"}
+
+
+class TestToggleRefusesANonBooleanFlag:
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("flag", NON_BOOLEAN_FLAGS)
+    async def test_server_toggle(self, sandbox: SimpleNamespace, flag: object) -> None:
+        _write_global(sandbox, {"srv": {"command": "x", "disabled": True}})
+        resp = await mcp_mod.api_mcp_toggle(_request({"name": "srv", "enabled": flag}))
+        assert resp.status == 400
+        assert _payload(resp) == _INVALID_ENABLED
+        assert _read_global(sandbox)["srv"] == {"command": "x", "disabled": True}
+        assert sandbox.synced == []
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("flag", NON_BOOLEAN_FLAGS)
+    async def test_tool_toggle(self, sandbox: SimpleNamespace, flag: object) -> None:
+        _write_global(sandbox, {"srv": {"command": "x", "disabledTools": ["ReadFile"]}})
+        resp = await mcp_mod.api_mcp_toggle_tool(
+            _request({"server": "srv", "tool": "ReadFile", "enabled": flag})
+        )
+        assert resp.status == 400
+        assert _payload(resp) == _INVALID_ENABLED
+        assert _read_global(sandbox)["srv"]["disabledTools"] == ["ReadFile"]
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("flag", NON_BOOLEAN_FLAGS)
+    async def test_toggle_all(self, sandbox: SimpleNamespace, flag: object) -> None:
+        _write_global(sandbox, {"a": {"command": "x", "disabled": True}})
+        resp = await mcp_mod.api_mcp_toggle_all(_request({"enabled": flag}))
+        assert resp.status == 400
+        assert _payload(resp) == _INVALID_ENABLED
+        assert _read_global(sandbox)["a"] == {"command": "x", "disabled": True}
+        assert sandbox.batched == []
