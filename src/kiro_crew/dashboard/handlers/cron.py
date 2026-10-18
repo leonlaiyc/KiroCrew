@@ -2239,6 +2239,14 @@ async def api_cron_enable(request: web.Request) -> web.Response:
         return body_err
     assert body is not None  # read_bounded_json returns (dict, None) on success
     enabled = body.get("enabled", True)
+    # The store writes ``user_paused = not enabled`` and persists ``enabled``
+    # as given, so a truthy non-boolean such as the string "false" would answer
+    # ok while leaving the job running, and store a string the next reload reads
+    # by truthiness.
+    if not isinstance(enabled, bool):
+        return web.json_response(
+            {"error": "enabled must be a boolean", "code": "invalid_enabled"}, status=400
+        )
     try:
         ok = await state.crons.enable_job_async(job_id, enabled=enabled)
     except CronStoreBusy:
@@ -2271,6 +2279,18 @@ async def api_cron_ack(request: web.Request) -> web.Response:
     assert body is not None  # read_bounded_json returns (dict, None) on success
     summary = body.get("summary", "acknowledged")
     notification_ts = body.get("ts", "")
+    # The summary is stored on the job and replayed into its next run's prompt
+    # as text, and the store slices it: a number or an object raises there (a
+    # 500), and a list would be persisted as a list. A null ts is the same as
+    # none, which is what a client that serializes an unset field sends.
+    if not isinstance(summary, str):
+        return web.json_response(
+            {"error": "summary must be a string", "code": "invalid_summary"}, status=400
+        )
+    if notification_ts is None:
+        notification_ts = ""
+    if not isinstance(notification_ts, str):
+        return web.json_response({"error": "ts must be a string", "code": "invalid_ts"}, status=400)
     # An app may mark read only a notification of the job it just passed:
     # the same ts / kind / job_id match api_notification_unack makes.
     app = _app_caller(request)

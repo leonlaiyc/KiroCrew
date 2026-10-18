@@ -3599,7 +3599,11 @@ it cannot parse at all. `PATCH /api/crons/{id}` and `DELETE /api/lessons` refuse
 400 `code: "invalid_json"`; `POST /api/crons/{id}/enable` and `POST /api/crons/{id}/ack`
 fall back to their defaults, as they do for an unreadable body. Neither reads a field
 off a non-object, which has no `.get` and no string key lookup and would surface as a
-500.
+500. The fields are typed too: `enabled` on `/enable` must be a JSON boolean (400
+`invalid_enabled`; the store pauses on `not enabled`, so the string `"false"` would
+otherwise answer ok and leave the job running), and on `/ack` `summary` must be a
+string (400 `invalid_summary`) and `ts` a string or `null` (400 `invalid_ts`), checked
+before the job or the notification is touched.
 
 **Cron Folders**: GET `/api/cron-folders` (list), POST `/api/cron-folders` (create `{name}` → `{id, name, order}`), PATCH `/api/cron-folders/{folder_id}` (rename `{name}`), DELETE `/api/cron-folders/{folder_id}` (delete folder, clears `folder_id` on assigned jobs)
 **Messaging**: POST `/api/send-message` (send to Slack DM + dashboard notification; body: `{text, title?, blocks?}`; when `blocks` provided, sends Block Kit message via `post_blocks()` with `text` as fallback; used by `send_message` MCP tool in `kirocrew-core`)

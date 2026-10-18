@@ -146,6 +146,91 @@ async def test_cron_enable_still_reads_an_object_body() -> None:
     enable.assert_awaited_once_with("job-1", enabled=False)
 
 
+@pytest.mark.parametrize("value", ["false", "true", 0, 1, None, [], {}])
+async def test_cron_enable_refuses_a_non_boolean_flag(value) -> None:
+    """The flag is used as ``not enabled`` and stored as given, so only a real
+    boolean may reach the store."""
+    enable = AsyncMock(return_value=True)
+    app = _cron_app(api_cron_enable, "/api/crons/{job_id}/enable", enable_job_async=enable)
+
+    async with TestClient(TestServer(app)) as client:
+        response = await client.post("/api/crons/job-1/enable", json={"enabled": value})
+        body = await response.json()
+
+    assert response.status == 400
+    assert body == {"error": "enabled must be a boolean", "code": "invalid_enabled"}
+    enable.assert_not_awaited()
+    app["state"].push_refresh.assert_not_called()
+
+
+async def test_cron_enable_string_false_does_not_leave_the_job_running(tmp_path) -> None:
+    """Against the real store: the string "false" is refused and the job keeps
+    its stored state, and a real ``false`` pauses it."""
+    svc = CronService(base_dir=tmp_path)
+    job = await svc.add_job_async("nightly", "m", every_secs=3600)
+    app = _cron_app(
+        api_cron_enable, "/api/crons/{job_id}/enable", enable_job_async=svc.enable_job_async
+    )
+
+    async with TestClient(TestServer(app)) as client:
+        refused = await client.post(f"/api/crons/{job.id}/enable", json={"enabled": "false"})
+        assert refused.status == 400
+        stored = svc.list_jobs(include_disabled=True)[0]
+        assert stored.enabled is True and stored.user_paused is False
+
+        paused = await client.post(f"/api/crons/{job.id}/enable", json={"enabled": False})
+        assert paused.status == 200
+
+    reloaded = CronService(base_dir=tmp_path).list_jobs(include_disabled=True)[0]
+    assert reloaded.enabled is False and reloaded.user_paused is True
+
+
+@pytest.mark.parametrize("value", [5, ["a"], {"text": "a"}, None, True])
+async def test_cron_ack_refuses_a_non_string_summary(value) -> None:
+    """The summary is replayed into the job's next prompt as text; anything
+    else is a 400 before the store or the notification is touched."""
+    ack = AsyncMock(return_value=True)
+    app = _cron_app(api_cron_ack, "/api/crons/{job_id}/ack", ack_job_async=ack)
+
+    async with TestClient(TestServer(app)) as client:
+        response = await client.post(
+            "/api/crons/job-1/ack", json={"summary": value, "ts": "2026-05-13T00:00:00Z"}
+        )
+        body = await response.json()
+
+    assert response.status == 400
+    assert body == {"error": "summary must be a string", "code": "invalid_summary"}
+    ack.assert_not_awaited()
+    app["state"].ack_notification.assert_not_awaited()
+
+
+@pytest.mark.parametrize("value", [5, ["2026-05-13T00:00:00Z"], {"ts": "x"}, False])
+async def test_cron_ack_refuses_a_non_string_ts(value) -> None:
+    ack = AsyncMock(return_value=True)
+    app = _cron_app(api_cron_ack, "/api/crons/{job_id}/ack", ack_job_async=ack)
+
+    async with TestClient(TestServer(app)) as client:
+        response = await client.post("/api/crons/job-1/ack", json={"summary": "seen", "ts": value})
+        body = await response.json()
+
+    assert response.status == 400
+    assert body == {"error": "ts must be a string", "code": "invalid_ts"}
+    ack.assert_not_awaited()
+    app["state"].ack_notification.assert_not_awaited()
+
+
+async def test_cron_ack_treats_a_null_ts_as_none() -> None:
+    ack = AsyncMock(return_value=True)
+    app = _cron_app(api_cron_ack, "/api/crons/{job_id}/ack", ack_job_async=ack)
+
+    async with TestClient(TestServer(app)) as client:
+        response = await client.post("/api/crons/job-1/ack", json={"summary": "seen", "ts": None})
+
+    assert response.status == 200
+    ack.assert_awaited_once_with("job-1", "seen")
+    app["state"].ack_notification.assert_not_awaited()
+
+
 @pytest.mark.parametrize("payload", NON_OBJECT_BODIES)
 async def test_cron_ack_refuses_a_non_object_body(payload) -> None:
     ack = AsyncMock(return_value=True)
