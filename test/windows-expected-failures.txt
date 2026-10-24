@@ -149,8 +149,6 @@ test/test_slack_gateway_run.py::TestRunMethod::test_run_no_dashboard_uses_api_se
 test/test_slack_gateway_run.py::TestRunMethod::test_run_raises_on_shutdown
 test/test_slack_gateway_run.py::TestRunMethod::test_run_stalled_marker_write_does_not_block_shutdown
 test/test_slack_gateway_run.py::TestRunSignalAndBgSession::test_run_with_ollama_config
-test/test_subagent_cwd.py::TestValidateCwd::test_tilde_expanded_in_allowed_roots
-test/test_subagent_cwd.py::TestValidateCwd::test_tilde_expanded_in_cwd
 test/test_subagent_sizing.py::TestMacosMemoryProbe::test_computes_available_gb_from_pages
 test/test_subagent_sizing.py::TestMacosMemoryProbe::test_none_page_count_fails_open
 test/test_subagent_sizing.py::TestMacosMemoryProbe::test_nonpositive_page_size_fails_open
