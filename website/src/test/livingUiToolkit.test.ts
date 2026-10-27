@@ -20,7 +20,7 @@ import { describe, expect, it } from 'vitest'
 import { THEME_VAR_NAMES } from '../lib/widgetSrcdoc'
 
 const SKILL_DIR = resolve(__dirname, '../../../src/kiro_crew/builtin_skills/living-ui')
-const SOURCE = readFileSync(join(SKILL_DIR, 'toolkit', 'living-ui.js'), 'utf8')
+const SOURCE = readFileSync(join(SKILL_DIR, 'toolkit', 'living-ui.js'), 'utf8').replace(/\r\n/g, '\n')
 const LOOKS_DIR = join(SKILL_DIR, 'looks')
 const BUDGET_BYTES = 5120
 const HELPERS = ['loop', 'follow', 'spring', 'settle', 'smooth', 'burst', 'tour', 'readout', 'focusOne', 'explode', 'css']

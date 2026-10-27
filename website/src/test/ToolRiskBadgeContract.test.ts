@@ -27,7 +27,7 @@ const SPEC = join(__dirname, '../../../docs/system-specs/modules/decisions.md')
 const SECTION = '## 9. The `tool.risk` annotation on the tool card'
 
 function sectionText(): string {
-  const text = readFileSync(SPEC, 'utf-8')
+  const text = readFileSync(SPEC, 'utf-8').replace(/\r\n/g, '\n')
   const start = text.indexOf(SECTION)
   if (start < 0) throw new Error(`${SECTION} is gone from ${SPEC} — the contract moved or was deleted`)
   return text.slice(start)

@@ -42,7 +42,7 @@ const MEMORY_SECTION = '## 13. Recalled memories (`memory.recall`)'
 
 /** The first fenced JSON block inside *section*. */
 function specFixtureIn(section: string): Record<string, unknown> {
-  const text = readFileSync(SPEC, 'utf-8')
+  const text = readFileSync(SPEC, 'utf-8').replace(/\r\n/g, '\n')
   const start = text.indexOf(section)
   if (start < 0) throw new Error(`${section} is gone from ${SPEC} — the contract moved or was deleted`)
   const fence = /```json\n([\s\S]*?)```/.exec(text.slice(start))
@@ -61,7 +61,7 @@ function specFixture(): Record<string, unknown> {
  * body this client sends is the sentence under the record it sends it about.
  */
 function specFeedbackVocabulary(): string {
-  const text = readFileSync(SPEC, 'utf-8')
+  const text = readFileSync(SPEC, 'utf-8').replace(/\r\n/g, '\n')
   const section = text.indexOf(SECTION)
   if (section < 0) throw new Error(`${SECTION} is gone from ${SPEC} — the contract moved or was deleted`)
   const start = text.indexOf('`POST /api/decisions/feedback`', section)
