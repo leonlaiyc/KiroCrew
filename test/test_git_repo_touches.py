@@ -1245,11 +1245,19 @@ class TestExecutedToolTouches:
         client.available_models = MagicMock(return_value=[])
         client.client.pop_pending_oauth_requests = MagicMock(return_value=[])
 
+        # The turn's error path catches whatever the stream raises, so a check that
+        # fails inside ``stream`` is recorded here and raised again after the turn.
+        raised: list[Exception] = []
+
         async def run_stream(msg):
-            async for event in stream(slot):
-                if event.kind == EVENT_COMPLETE:
-                    yield LLMEvent(kind=EVENT_TEXT_CHUNK, text="Done.")
-                yield event
+            try:
+                async for event in stream(slot):
+                    if event.kind == EVENT_COMPLETE:
+                        yield LLMEvent(kind=EVENT_TEXT_CHUNK, text="Done.")
+                    yield event
+            except Exception as exc:
+                raised.append(exc)
+                raise
 
         client.stream = run_stream
         state.sessions.get_or_create = AsyncMock(return_value=(client, True, False))
@@ -1257,6 +1265,8 @@ class TestExecutedToolTouches:
             asyncio.ensure_future(_run_chat(state, slot, "hello")),
             what="the tool-touch regression turn completing",
         )
+        if raised:
+            raise raised[0]
         await TestExecutedToolTouches._walked(slot)
         return slot
 
