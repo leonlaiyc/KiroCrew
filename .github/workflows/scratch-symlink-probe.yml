@@ -1,0 +1,32 @@
+name: scratch-symlink-probe
+on:
+  push:
+    branches: ["scratch/symlink-probe-ci"]
+permissions:
+  contents: read
+jobs:
+  win:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-windows-tests
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+      - run: uv pip install --system -e ".[voice,desktop]" --group dev
+      - name: probe
+        shell: bash
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          cd test && python -c "import conftest; print('HAS_SYMLINKS', conftest._HAS_SYMLINKS)"
+      - name: run
+        shell: bash
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python -m pytest -q -n auto --timeout=180 --no-cov --max-worker-restart=0 -rfEs -p no:cacheprovider test/test_agent_scratch.py test/test_app_agent_launch_copy.py test/test_apps_routes_coverage_blob_proxy.py test/test_aws_control_storage.py test/test_backend_tmp.py test/test_chat_attachments.py test/test_claude_settings_sources.py test/test_computer_use_apps.py test/test_config_rmw_preserves_settings.py test/test_config_superseded_defaults.py test/test_crash_dump_store.py test/test_crewmate_bundle_export.py test/test_crewmate_import_route.py test/test_dashboard_cron_script_source.py test/test_dashboard_file_io.py test/test_dashboard_upkeep_skill.py test/test_dev_fleet_pod_guard_off_loop.py test/test_feature_videos_hosted.py test/test_feature_videos_hosted_serving.py test/test_governance_distribution_cache_trust.py test/test_governance_distribution_fetch_checks.py test/test_image_artifacts.py test/test_issue_radar_crew_store_unit_order.py test/test_knowledge_kiroignore.py test/test_ledger_sweep.py test/test_masked_leaf_staged_publish.py test/test_meetings_note.py test/test_meetings_store.py test/test_outbound_files.py test/test_papyrus_latex.py test/test_papyrus_store.py test/test_pod.py test/test_project_scan_fixtures.py test/test_project_scan_members.py test/test_project_scan_walker.py test/test_push_guard_record.py test/test_s5_boundary_poc.py test/test_session_folders.py test/test_session_ledger.py test/test_side_readonly_spec_reap.py test/test_skill_index_app_symlinks.py test/test_testing_links.py test/test_work_ledger_purge.py test/test_xdist_host_budget.py 
