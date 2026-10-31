@@ -10,9 +10,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - {name: symlabels-branch, ref: 646ad2a1a38e73464f0d1bc476d4838da175bd5b, files: symlabels.txt}
+          - {name: symlabels-branch, ref: f49954d72ba03dd057cf040a57071bb766cf8597, files: symlabels.txt}
           - {name: symlabels-main, ref: 39f27b1262ce3e5be3f6f021edf5e2b98b2f1a86, files: symlabels.txt}
-          - {name: hooksh-branch, ref: a62f92000d79b6f0f04f547497638de0a76106c5, files: hooksh.txt}
+          - {name: harness-branch, ref: 37dc25330fbd9db85021a488d71fb4903ae42fef, files: harness.txt}
+          - {name: glab-branch, ref: eecbdc41bd63928000fe5485de5d56f67551aa3c, files: glab.txt}
     name: ${{ matrix.name }}
     runs-on: windows-latest
     timeout-minutes: 60
