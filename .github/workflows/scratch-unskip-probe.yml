@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: kirodotdev/KiroCrew
-          ref: 39f27b1262
+          ref: 39f27b1262ce3e5be3f6f021edf5e2b98b2f1a86
           persist-credentials: false
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -31,7 +31,7 @@ jobs:
           UNSKIP_OUT: ${{ github.workspace }}/unskip.jsonl
         run: |
           python -m pytest -q -n auto --timeout=120 --no-cov -p no:cacheprovider -p scratch_unskip $(cat probe/probe-files.txt | tr -d '\r') || true
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: unskip
