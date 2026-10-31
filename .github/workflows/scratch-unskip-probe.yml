@@ -1,0 +1,38 @@
+name: scratch-unskip-probe
+on:
+  push:
+    branches: ["scratch/unskip-probe"]
+permissions:
+  contents: read
+jobs:
+  win:
+    runs-on: windows-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: kirodotdev/KiroCrew
+          ref: 39f27b1262
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: probe
+          persist-credentials: false
+      - uses: ./.github/actions/setup-windows-tests
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+      - run: uv pip install --system -e ".[voice,desktop]" --group dev
+      - name: run
+        shell: bash
+        env:
+          PYTHONPATH: ${{ github.workspace }}/probe;${{ github.workspace }}
+          UNSKIP_OUT: ${{ github.workspace }}/unskip.jsonl
+        run: |
+          python -m pytest -q -n auto --timeout=120 --no-cov -p no:cacheprovider -p scratch_unskip $(cat probe/probe-files.txt | tr -d '\r') || true
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: unskip
+          path: unskip.jsonl.*
