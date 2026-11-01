@@ -1,0 +1,34 @@
+name: scratch-aws-pkg-symlink-probe
+on:
+  push:
+    branches: ["scratch/aws-pkg-symlink-probe"]
+permissions:
+  contents: read
+jobs:
+  packaging-tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: c1e51c18a30ba89d2f616a161de3d852eb1c0480
+          persist-credentials: false
+      - run: git rev-parse HEAD
+      - if: runner.os == 'Windows'
+        uses: ./.github/actions/setup-windows-tests
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+      - run: uv pip install --system -e ".[voice,desktop]" --group dev
+      - name: packaging tests, skip reasons listed
+        shell: bash
+        run: |
+          python -m pytest -q --no-cov -p no:cacheprovider -rs \
+            src/kiro_crew/apps/builtins/aws_control/crew/packaging/tests 2>&1 | tee out.txt
+          echo "PRIVILEGE_SKIPS=$(grep -c SeCreateSymbolicLinkPrivilege out.txt || true)"
+          ! grep -q SeCreateSymbolicLinkPrivilege out.txt
