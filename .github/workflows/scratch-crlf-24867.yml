@@ -1,8 +1,8 @@
-name: scratch-crlf-24867-final
+name: scratch-crlf-24867-final4b36
 on:
   workflow_dispatch:
   push:
-    branches: ["scratch/codex-crlf-24867-validation-20261101"]
+    branches: ["scratch/codex-crlf-24867-final4b36-20261101"]
 permissions:
   contents: read
 jobs:
@@ -26,19 +26,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --no-tags https://github.com/kirodotdev/KiroCrew.git 078ee4f5f2732175ed83e975df87383c16f1cb5a
-          git checkout --detach 078ee4f5f2732175ed83e975df87383c16f1cb5a
+          git fetch --no-tags https://github.com/kirodotdev/KiroCrew.git c1f8bdce611fd28d8448ae10e01bb9b0a6bbc1b9
+          git checkout --detach c1f8bdce611fd28d8448ae10e01bb9b0a6bbc1b9
           git diff --binary 20e32cf04c0c2825a1ff476ff34196f97f52e2ef^ 20e32cf04c0c2825a1ff476ff34196f97f52e2ef | git apply --index
-          test "$(git write-tree)" = e5a3e52efd7e28440093ac0a8c22249773618be1
+          test "$(git write-tree)" = b155d860e7a4807fc489052de4b727db0b22e6cf
           python - <<'PY'
           import subprocess
-          raw = b"tree e5a3e52efd7e28440093ac0a8c22249773618be1\nparent 078ee4f5f2732175ed83e975df87383c16f1cb5a\nauthor Leon <leon.lai.yc@gmail.com> 1793100915 +0800\ncommitter Leon <leon.lai.yc@gmail.com> 1793497472 +0800\n\ntest: read contract fixtures with either newline convention\n"
+          raw = b"tree b155d860e7a4807fc489052de4b727db0b22e6cf\nparent c1f8bdce611fd28d8448ae10e01bb9b0a6bbc1b9\nauthor Leon <leon.lai.yc@gmail.com> 1793100915 +0800\ncommitter Leon <leon.lai.yc@gmail.com> 1793501585 +0800\n\ntest: read contract fixtures with either newline convention\n"
           sha = subprocess.check_output(['git','hash-object','-t','commit','-w','--stdin'], input=raw).decode().strip()
-          assert sha == '2f74bb747b79e1c351f587e6a2b6b73fb5ea472c', sha
+          assert sha == '4b36af695c5eb7f8a8e4109e212db5ca18627c5f', sha
           print('RECONSTRUCTED_FINAL_HEAD', sha)
           PY
-          git checkout --detach 2f74bb747b79e1c351f587e6a2b6b73fb5ea472c
-          git update-ref refs/remotes/origin/main 078ee4f5f2732175ed83e975df87383c16f1cb5a
+          git checkout --detach 4b36af695c5eb7f8a8e4109e212db5ca18627c5f
+          git update-ref refs/remotes/origin/main c1f8bdce611fd28d8448ae10e01bb9b0a6bbc1b9
           git rev-parse HEAD HEAD^{tree} origin/main
           test -z "$(git status --porcelain)"
       - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
@@ -62,7 +62,7 @@ jobs:
       - name: assert final HEAD after tests
         if: always()
         shell: bash
-        run: test "$(git rev-parse HEAD)" = 2f74bb747b79e1c351f587e6a2b6b73fb5ea472c
+        run: test "$(git rev-parse HEAD)" = 4b36af695c5eb7f8a8e4109e212db5ca18627c5f
   linux-extras:
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -79,23 +79,32 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --no-tags https://github.com/kirodotdev/KiroCrew.git 078ee4f5f2732175ed83e975df87383c16f1cb5a
-          git checkout --detach 078ee4f5f2732175ed83e975df87383c16f1cb5a
+          git fetch --no-tags https://github.com/kirodotdev/KiroCrew.git c1f8bdce611fd28d8448ae10e01bb9b0a6bbc1b9
+          git checkout --detach c1f8bdce611fd28d8448ae10e01bb9b0a6bbc1b9
           git diff --binary 20e32cf04c0c2825a1ff476ff34196f97f52e2ef^ 20e32cf04c0c2825a1ff476ff34196f97f52e2ef | git apply --index
-          test "$(git write-tree)" = e5a3e52efd7e28440093ac0a8c22249773618be1
+          test "$(git write-tree)" = b155d860e7a4807fc489052de4b727db0b22e6cf
           python - <<'PY'
           import subprocess
-          raw = b"tree e5a3e52efd7e28440093ac0a8c22249773618be1\nparent 078ee4f5f2732175ed83e975df87383c16f1cb5a\nauthor Leon <leon.lai.yc@gmail.com> 1793100915 +0800\ncommitter Leon <leon.lai.yc@gmail.com> 1793497472 +0800\n\ntest: read contract fixtures with either newline convention\n"
+          raw = b"tree b155d860e7a4807fc489052de4b727db0b22e6cf\nparent c1f8bdce611fd28d8448ae10e01bb9b0a6bbc1b9\nauthor Leon <leon.lai.yc@gmail.com> 1793100915 +0800\ncommitter Leon <leon.lai.yc@gmail.com> 1793501585 +0800\n\ntest: read contract fixtures with either newline convention\n"
           sha = subprocess.check_output(['git','hash-object','-t','commit','-w','--stdin'], input=raw).decode().strip()
-          assert sha == '2f74bb747b79e1c351f587e6a2b6b73fb5ea472c', sha
+          assert sha == '4b36af695c5eb7f8a8e4109e212db5ca18627c5f', sha
           print('RECONSTRUCTED_FINAL_HEAD', sha)
           PY
-          git checkout --detach 2f74bb747b79e1c351f587e6a2b6b73fb5ea472c
-          git update-ref refs/remotes/origin/main 078ee4f5f2732175ed83e975df87383c16f1cb5a
+          git checkout --detach 4b36af695c5eb7f8a8e4109e212db5ca18627c5f
+          git update-ref refs/remotes/origin/main c1f8bdce611fd28d8448ae10e01bb9b0a6bbc1b9
           git rev-parse HEAD HEAD^{tree} origin/main
           test -z "$(git status --porcelain)"
       - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
       - run: uv pip install --system -e ".[voice,desktop]" --group dev
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: website/electron/package-lock.json
+      - name: install Electron shell dependencies from its lockfile
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: "1"
+        run: npm ci --prefix website/electron --no-audit --no-fund
       - name: install frontend dependencies
         run: npm ci --prefix website
       - name: pinned Semgrep unchanged diff command
@@ -106,9 +115,9 @@ jobs:
         run: npm --prefix website run test:electron
       - name: flake pattern ratchet
         env:
-          FLAKE_RATCHET_BASE: 078ee4f5f2732175ed83e975df87383c16f1cb5a
+          FLAKE_RATCHET_BASE: c1f8bdce611fd28d8448ae10e01bb9b0a6bbc1b9
         run: python -m pytest -n0 test/test_flake_pattern_ratchet.py
       - name: assert final HEAD after checks
         if: always()
         shell: bash
-        run: test "$(git rev-parse HEAD)" = 2f74bb747b79e1c351f587e6a2b6b73fb5ea472c
+        run: test "$(git rev-parse HEAD)" = 4b36af695c5eb7f8a8e4109e212db5ca18627c5f
