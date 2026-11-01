@@ -44,6 +44,9 @@ jobs:
       - run: uv pip install --system -e ".[voice,desktop]" --group dev
       - if: runner.os == 'Windows'
         uses: ./.github/actions/setup-windows-tests
+      - name: record runner symlink capability
+        shell: bash
+        run: cd test && python -c "import conftest; print('HAS_SYMLINKS', conftest._HAS_SYMLINKS)"
       - name: required backend selection unchanged
         shell: bash
         run: |
@@ -55,6 +58,10 @@ jobs:
           python -m pytest -q --no-cov -p no:cacheprovider -rfEs \
             "src/kiro_crew/apps/builtins/aws_control/crew/packaging/tests/test_concurrent_builds_and_markers.py::test_a_link_at_the_spec_itself_is_still_refused" \
             "src/kiro_crew/apps/builtins/aws_control/crew/packaging/tests/test_entry_shapes_and_preflight_order.py::test_the_report_preflight_judges_the_entry_before_reading_it"
+      - name: assert final HEAD after tests
+        if: always()
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = 2f74bb747b79e1c351f587e6a2b6b73fb5ea472c
   linux-extras:
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -100,3 +107,7 @@ jobs:
         env:
           FLAKE_RATCHET_BASE: 078ee4f5f2732175ed83e975df87383c16f1cb5a
         run: python -m pytest -n0 test/test_flake_pattern_ratchet.py
+      - name: assert final HEAD after checks
+        if: always()
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = 2f74bb747b79e1c351f587e6a2b6b73fb5ea472c
