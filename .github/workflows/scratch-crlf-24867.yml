@@ -1,5 +1,6 @@
 name: scratch-crlf-24867-final
 on:
+  workflow_dispatch:
   push:
     branches: ["scratch/codex-crlf-24867-validation-20261101"]
 permissions:
