@@ -1,0 +1,55 @@
+name: scratch-crlf-24867-selector
+on:
+  workflow_dispatch:
+  push:
+    branches: ["scratch/codex-crlf-24867-selector-20261101"]
+permissions:
+  contents: read
+jobs:
+  backend:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 20e32cf04c0c2825a1ff476ff34196f97f52e2ef
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+      - name: reconstruct and assert exact final HEAD
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags https://github.com/kirodotdev/KiroCrew.git 2f0313b2d34d9e86e352273a9ef41ec27724455c
+          git checkout --detach 2f0313b2d34d9e86e352273a9ef41ec27724455c
+          git diff --binary 20e32cf04c0c2825a1ff476ff34196f97f52e2ef^ 20e32cf04c0c2825a1ff476ff34196f97f52e2ef | git apply --index
+          test "$(git write-tree)" = d6def7ff37d665065f9c81d2f142898c77b9c2b0
+          python - <<'PY'
+          import subprocess
+          raw = b'tree d6def7ff37d665065f9c81d2f142898c77b9c2b0\nparent 2f0313b2d34d9e86e352273a9ef41ec27724455c\nauthor Leon <leon.lai.yc@gmail.com> 1793100915 +0800\ncommitter Leon <leon.lai.yc@gmail.com> 1793536940 +0800\n\ntest: read contract fixtures with either newline convention\n'
+          sha = subprocess.check_output(['git','hash-object','-t','commit','-w','--stdin'], input=raw).decode().strip()
+          assert sha == '9e73c90df84257c1bd20bb996fa2803d4f3de709', sha
+          print('RECONSTRUCTED_FINAL_HEAD', sha)
+          PY
+          git checkout --detach 9e73c90df84257c1bd20bb996fa2803d4f3de709
+          git update-ref refs/remotes/origin/main 2f0313b2d34d9e86e352273a9ef41ec27724455c
+          git rev-parse HEAD HEAD^{tree} origin/main
+          test -z "$(git status --porcelain)"
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+      - run: uv pip install --system -e ".[voice,desktop]" --group dev
+      - if: runner.os == 'Windows'
+        uses: ./.github/actions/setup-windows-tests
+      - name: unchanged mandatory selector self-test
+        shell: bash
+        run: |
+          python3 scripts/run_scoped_tests.py --test
+      - name: assert final HEAD after tests
+        if: always()
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = 9e73c90df84257c1bd20bb996fa2803d4f3de709
