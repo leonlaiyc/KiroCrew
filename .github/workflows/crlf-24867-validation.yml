@@ -1,0 +1,169 @@
+name: scratch-crlf-24867-20261105-fresh
+on:
+  workflow_dispatch:
+  push:
+    branches: ["scratch/codex-crlf-24867-gates-20261105-fresh"]
+permissions:
+  contents: read
+jobs:
+  backend:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+      - name: reconstruct and assert exact final HEAD
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags https://github.com/kirodotdev/KiroCrew.git 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9
+          git checkout --detach 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9
+          printf '%s' 'ZGlmZiAtLWdpdCBhL3dlYnNpdGUvc3JjL3Rlc3QvVG9vbFJpc2tCYWRnZUNvbnRyYWN0LnRlc3QudHMgYi93ZWJzaXRlL3NyYy90ZXN0L1Rvb2xSaXNrQmFkZ2VDb250cmFjdC50ZXN0LnRzCmluZGV4IGY1N2YzNGI0NTguLjMwZmY0NWQwZmMgMTAwNjQ0Ci0tLSBhL3dlYnNpdGUvc3JjL3Rlc3QvVG9vbFJpc2tCYWRnZUNvbnRyYWN0LnRlc3QudHMKKysrIGIvd2Vic2l0ZS9zcmMvdGVzdC9Ub29sUmlza0JhZGdlQ29udHJhY3QudGVzdC50cwpAQCAtMjcsNyArMjcsNyBAQCBjb25zdCBTUEVDID0gam9pbihfX2Rpcm5hbWUsICcuLi8uLi8uLi9kb2NzL3N5c3RlbS1zcGVjcy9tb2R1bGVzL2RlY2lzaW9ucy5tZCcpCiBjb25zdCBTRUNUSU9OID0gJyMjIDkuIFRoZSBgdG9vbC5yaXNrYCBhbm5vdGF0aW9uIG9uIHRoZSB0b29sIGNhcmQnCiAKIGZ1bmN0aW9uIHNlY3Rpb25UZXh0KCk6IHN0cmluZyB7Ci0gIGNvbnN0IHRleHQgPSByZWFkRmlsZVN5bmMoU1BFQywgJ3V0Zi04JykKKyAgY29uc3QgdGV4dCA9IHJlYWRGaWxlU3luYyhTUEVDLCAndXRmLTgnKS5yZXBsYWNlKC9cclxuL2csICdcbicpCiAgIGNvbnN0IHN0YXJ0ID0gdGV4dC5pbmRleE9mKFNFQ1RJT04pCiAgIGlmIChzdGFydCA8IDApIHRocm93IG5ldyBFcnJvcihgJHtTRUNUSU9OfSBpcyBnb25lIGZyb20gJHtTUEVDfSDigJQgdGhlIGNvbnRyYWN0IG1vdmVkIG9yIHdhcyBkZWxldGVkYCkKICAgcmV0dXJuIHRleHQuc2xpY2Uoc3RhcnQpCmRpZmYgLS1naXQgYS93ZWJzaXRlL3NyYy90ZXN0L2RlY2lzaW9uU3RyaXBDb250cmFjdC50ZXN0LnRzIGIvd2Vic2l0ZS9zcmMvdGVzdC9kZWNpc2lvblN0cmlwQ29udHJhY3QudGVzdC50cwppbmRleCA2NGFhMDQzNDM5Li5jMGU1YzFjNTdmIDEwMDY0NAotLS0gYS93ZWJzaXRlL3NyYy90ZXN0L2RlY2lzaW9uU3RyaXBDb250cmFjdC50ZXN0LnRzCisrKyBiL3dlYnNpdGUvc3JjL3Rlc3QvZGVjaXNpb25TdHJpcENvbnRyYWN0LnRlc3QudHMKQEAgLTQyLDcgKzQyLDcgQEAgY29uc3QgTUVNT1JZX1NFQ1RJT04gPSAnIyMgMTMuIFJlY2FsbGVkIG1lbW9yaWVzIChgbWVtb3J5LnJlY2FsbGApJwogCiAvKiogVGhlIGZpcnN0IGZlbmNlZCBKU09OIGJsb2NrIGluc2lkZSAqc2VjdGlvbiouICovCiBmdW5jdGlvbiBzcGVjRml4dHVyZUluKHNlY3Rpb246IHN0cmluZyk6IFJlY29yZDxzdHJpbmcsIHVua25vd24+IHsKLSAgY29uc3QgdGV4dCA9IHJlYWRGaWxlU3luYyhTUEVDLCAndXRmLTgnKQorICBjb25zdCB0ZXh0ID0gcmVhZEZpbGVTeW5jKFNQRUMsICd1dGYtOCcpLnJlcGxhY2UoL1xyXG4vZywgJ1xuJykKICAgY29uc3Qgc3RhcnQgPSB0ZXh0LmluZGV4T2Yoc2VjdGlvbikKICAgaWYgKHN0YXJ0IDwgMCkgdGhyb3cgbmV3IEVycm9yKGAke3NlY3Rpb259IGlzIGdvbmUgZnJvbSAke1NQRUN9IOKAlCB0aGUgY29udHJhY3QgbW92ZWQgb3Igd2FzIGRlbGV0ZWRgKQogICBjb25zdCBmZW5jZSA9IC9gYGBqc29uXG4oW1xzXFNdKj8pYGBgLy5leGVjKHRleHQuc2xpY2Uoc3RhcnQpKQpAQCAtNjEsNyArNjEsNyBAQCBmdW5jdGlvbiBzcGVjRml4dHVyZSgpOiBSZWNvcmQ8c3RyaW5nLCB1bmtub3duPiB7CiAgKiBib2R5IHRoaXMgY2xpZW50IHNlbmRzIGlzIHRoZSBzZW50ZW5jZSB1bmRlciB0aGUgcmVjb3JkIGl0IHNlbmRzIGl0IGFib3V0LgogICovCiBmdW5jdGlvbiBzcGVjRmVlZGJhY2tWb2NhYnVsYXJ5KCk6IHN0cmluZyB7Ci0gIGNvbnN0IHRleHQgPSByZWFkRmlsZVN5bmMoU1BFQywgJ3V0Zi04JykKKyAgY29uc3QgdGV4dCA9IHJlYWRGaWxlU3luYyhTUEVDLCAndXRmLTgnKS5yZXBsYWNlKC9cclxuL2csICdcbicpCiAgIGNvbnN0IHNlY3Rpb24gPSB0ZXh0LmluZGV4T2YoU0VDVElPTikKICAgaWYgKHNlY3Rpb24gPCAwKSB0aHJvdyBuZXcgRXJyb3IoYCR7U0VDVElPTn0gaXMgZ29uZSBmcm9tICR7U1BFQ30g4oCUIHRoZSBjb250cmFjdCBtb3ZlZCBvciB3YXMgZGVsZXRlZGApCiAgIGNvbnN0IHN0YXJ0ID0gdGV4dC5pbmRleE9mKCdgUE9TVCAvYXBpL2RlY2lzaW9ucy9mZWVkYmFja2AnLCBzZWN0aW9uKQpkaWZmIC0tZ2l0IGEvd2Vic2l0ZS9zcmMvdGVzdC9saXZpbmdVaVRvb2xraXQudGVzdC50cyBiL3dlYnNpdGUvc3JjL3Rlc3QvbGl2aW5nVWlUb29sa2l0LnRlc3QudHMKaW5kZXggZGJhYmU3YjI1Yy4uYzQxMTk5MzFiYSAxMDA2NDQKLS0tIGEvd2Vic2l0ZS9zcmMvdGVzdC9saXZpbmdVaVRvb2xraXQudGVzdC50cworKysgYi93ZWJzaXRlL3NyYy90ZXN0L2xpdmluZ1VpVG9vbGtpdC50ZXN0LnRzCkBAIC0yMCw3ICsyMCw3IEBAIGltcG9ydCB7IGRlc2NyaWJlLCBleHBlY3QsIGl0IH0gZnJvbSAndml0ZXN0JwogaW1wb3J0IHsgVEhFTUVfVkFSX05BTUVTIH0gZnJvbSAnLi4vbGliL3dpZGdldFNyY2RvYycKIAogY29uc3QgU0tJTExfRElSID0gcmVzb2x2ZShfX2Rpcm5hbWUsICcuLi8uLi8uLi9zcmMva2lyb19jcmV3L2J1aWx0aW5fc2tpbGxzL2xpdmluZy11aScpCi1jb25zdCBTT1VSQ0UgPSByZWFkRmlsZVN5bmMoam9pbihTS0lMTF9ESVIsICd0b29sa2l0JywgJ2xpdmluZy11aS5qcycpLCAndXRmOCcpCitjb25zdCBTT1VSQ0UgPSByZWFkRmlsZVN5bmMoam9pbihTS0lMTF9ESVIsICd0b29sa2l0JywgJ2xpdmluZy11aS5qcycpLCAndXRmOCcpLnJlcGxhY2UoL1xyXG4vZywgJ1xuJykKIGNvbnN0IExPT0tTX0RJUiA9IGpvaW4oU0tJTExfRElSLCAnbG9va3MnKQogY29uc3QgQlVER0VUX0JZVEVTID0gNTEyMAogY29uc3QgSEVMUEVSUyA9IFsnbG9vcCcsICdmb2xsb3cnLCAnc3ByaW5nJywgJ3NldHRsZScsICdzbW9vdGgnLCAnYnVyc3QnLCAndG91cicsICdyZWFkb3V0JywgJ2ZvY3VzT25lJywgJ2V4cGxvZGUnLCAnY3NzJ10K' | base64 -d | git apply --index
+          test "$(git write-tree)" = 6e79b7357b107572dbd748677f94f90ced3de1f6
+          python - <<'PY'
+          import subprocess
+          raw = b'tree 6e79b7357b107572dbd748677f94f90ced3de1f6\nparent 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9\nauthor Leon <leon.lai.yc@gmail.com> 1793848540 +0800\ncommitter Leon <leon.lai.yc@gmail.com> 1793849361 +0800\n\ntest: read contract fixtures with either newline convention\n'
+          sha = subprocess.check_output(['git','hash-object','-t','commit','-w','--stdin'], input=raw).decode().strip()
+          assert sha == '68190051b8be4bd215b681e327d4928811fb7e39', sha
+          print('RECONSTRUCTED_FINAL_HEAD', sha)
+          PY
+          git checkout --detach 68190051b8be4bd215b681e327d4928811fb7e39
+          git update-ref refs/remotes/origin/main 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9
+          git rev-parse HEAD HEAD^{tree} origin/main
+          test -z "$(git status --porcelain)"
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+      - run: uv pip install --system -e ".[voice,desktop]" --group dev
+      - if: runner.os == 'Windows'
+        uses: ./.github/actions/setup-windows-tests
+      - name: record runner symlink capability
+        shell: bash
+        run: cd test && python -c "import conftest; print('HAS_SYMLINKS', conftest._HAS_SYMLINKS)"
+      - name: required backend selection unchanged
+        shell: bash
+        run: |
+          BASE="$(git merge-base HEAD origin/main)" && SCOPED_TESTS_BASE_REF="$BASE" python scripts/run_scoped_tests.py --surface backend
+      - name: explicit symlink regression nodes
+        if: always()
+        shell: bash
+        run: |
+          python -m pytest -q --no-cov -p no:cacheprovider -rfEs \
+            "src/kiro_crew/apps/builtins/aws_control/crew/packaging/tests/test_concurrent_builds_and_markers.py::test_a_link_at_the_spec_itself_is_still_refused" \
+            "src/kiro_crew/apps/builtins/aws_control/crew/packaging/tests/test_entry_shapes_and_preflight_order.py::test_the_report_preflight_judges_the_entry_before_reading_it"
+      - name: assert final HEAD after tests
+        if: always()
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = 68190051b8be4bd215b681e327d4928811fb7e39
+  code-floor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+      - name: reconstruct and assert exact final HEAD
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags https://github.com/kirodotdev/KiroCrew.git 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9
+          git checkout --detach 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9
+          printf '%s' 'ZGlmZiAtLWdpdCBhL3dlYnNpdGUvc3JjL3Rlc3QvVG9vbFJpc2tCYWRnZUNvbnRyYWN0LnRlc3QudHMgYi93ZWJzaXRlL3NyYy90ZXN0L1Rvb2xSaXNrQmFkZ2VDb250cmFjdC50ZXN0LnRzCmluZGV4IGY1N2YzNGI0NTguLjMwZmY0NWQwZmMgMTAwNjQ0Ci0tLSBhL3dlYnNpdGUvc3JjL3Rlc3QvVG9vbFJpc2tCYWRnZUNvbnRyYWN0LnRlc3QudHMKKysrIGIvd2Vic2l0ZS9zcmMvdGVzdC9Ub29sUmlza0JhZGdlQ29udHJhY3QudGVzdC50cwpAQCAtMjcsNyArMjcsNyBAQCBjb25zdCBTUEVDID0gam9pbihfX2Rpcm5hbWUsICcuLi8uLi8uLi9kb2NzL3N5c3RlbS1zcGVjcy9tb2R1bGVzL2RlY2lzaW9ucy5tZCcpCiBjb25zdCBTRUNUSU9OID0gJyMjIDkuIFRoZSBgdG9vbC5yaXNrYCBhbm5vdGF0aW9uIG9uIHRoZSB0b29sIGNhcmQnCiAKIGZ1bmN0aW9uIHNlY3Rpb25UZXh0KCk6IHN0cmluZyB7Ci0gIGNvbnN0IHRleHQgPSByZWFkRmlsZVN5bmMoU1BFQywgJ3V0Zi04JykKKyAgY29uc3QgdGV4dCA9IHJlYWRGaWxlU3luYyhTUEVDLCAndXRmLTgnKS5yZXBsYWNlKC9cclxuL2csICdcbicpCiAgIGNvbnN0IHN0YXJ0ID0gdGV4dC5pbmRleE9mKFNFQ1RJT04pCiAgIGlmIChzdGFydCA8IDApIHRocm93IG5ldyBFcnJvcihgJHtTRUNUSU9OfSBpcyBnb25lIGZyb20gJHtTUEVDfSDigJQgdGhlIGNvbnRyYWN0IG1vdmVkIG9yIHdhcyBkZWxldGVkYCkKICAgcmV0dXJuIHRleHQuc2xpY2Uoc3RhcnQpCmRpZmYgLS1naXQgYS93ZWJzaXRlL3NyYy90ZXN0L2RlY2lzaW9uU3RyaXBDb250cmFjdC50ZXN0LnRzIGIvd2Vic2l0ZS9zcmMvdGVzdC9kZWNpc2lvblN0cmlwQ29udHJhY3QudGVzdC50cwppbmRleCA2NGFhMDQzNDM5Li5jMGU1YzFjNTdmIDEwMDY0NAotLS0gYS93ZWJzaXRlL3NyYy90ZXN0L2RlY2lzaW9uU3RyaXBDb250cmFjdC50ZXN0LnRzCisrKyBiL3dlYnNpdGUvc3JjL3Rlc3QvZGVjaXNpb25TdHJpcENvbnRyYWN0LnRlc3QudHMKQEAgLTQyLDcgKzQyLDcgQEAgY29uc3QgTUVNT1JZX1NFQ1RJT04gPSAnIyMgMTMuIFJlY2FsbGVkIG1lbW9yaWVzIChgbWVtb3J5LnJlY2FsbGApJwogCiAvKiogVGhlIGZpcnN0IGZlbmNlZCBKU09OIGJsb2NrIGluc2lkZSAqc2VjdGlvbiouICovCiBmdW5jdGlvbiBzcGVjRml4dHVyZUluKHNlY3Rpb246IHN0cmluZyk6IFJlY29yZDxzdHJpbmcsIHVua25vd24+IHsKLSAgY29uc3QgdGV4dCA9IHJlYWRGaWxlU3luYyhTUEVDLCAndXRmLTgnKQorICBjb25zdCB0ZXh0ID0gcmVhZEZpbGVTeW5jKFNQRUMsICd1dGYtOCcpLnJlcGxhY2UoL1xyXG4vZywgJ1xuJykKICAgY29uc3Qgc3RhcnQgPSB0ZXh0LmluZGV4T2Yoc2VjdGlvbikKICAgaWYgKHN0YXJ0IDwgMCkgdGhyb3cgbmV3IEVycm9yKGAke3NlY3Rpb259IGlzIGdvbmUgZnJvbSAke1NQRUN9IOKAlCB0aGUgY29udHJhY3QgbW92ZWQgb3Igd2FzIGRlbGV0ZWRgKQogICBjb25zdCBmZW5jZSA9IC9gYGBqc29uXG4oW1xzXFNdKj8pYGBgLy5leGVjKHRleHQuc2xpY2Uoc3RhcnQpKQpAQCAtNjEsNyArNjEsNyBAQCBmdW5jdGlvbiBzcGVjRml4dHVyZSgpOiBSZWNvcmQ8c3RyaW5nLCB1bmtub3duPiB7CiAgKiBib2R5IHRoaXMgY2xpZW50IHNlbmRzIGlzIHRoZSBzZW50ZW5jZSB1bmRlciB0aGUgcmVjb3JkIGl0IHNlbmRzIGl0IGFib3V0LgogICovCiBmdW5jdGlvbiBzcGVjRmVlZGJhY2tWb2NhYnVsYXJ5KCk6IHN0cmluZyB7Ci0gIGNvbnN0IHRleHQgPSByZWFkRmlsZVN5bmMoU1BFQywgJ3V0Zi04JykKKyAgY29uc3QgdGV4dCA9IHJlYWRGaWxlU3luYyhTUEVDLCAndXRmLTgnKS5yZXBsYWNlKC9cclxuL2csICdcbicpCiAgIGNvbnN0IHNlY3Rpb24gPSB0ZXh0LmluZGV4T2YoU0VDVElPTikKICAgaWYgKHNlY3Rpb24gPCAwKSB0aHJvdyBuZXcgRXJyb3IoYCR7U0VDVElPTn0gaXMgZ29uZSBmcm9tICR7U1BFQ30g4oCUIHRoZSBjb250cmFjdCBtb3ZlZCBvciB3YXMgZGVsZXRlZGApCiAgIGNvbnN0IHN0YXJ0ID0gdGV4dC5pbmRleE9mKCdgUE9TVCAvYXBpL2RlY2lzaW9ucy9mZWVkYmFja2AnLCBzZWN0aW9uKQpkaWZmIC0tZ2l0IGEvd2Vic2l0ZS9zcmMvdGVzdC9saXZpbmdVaVRvb2xraXQudGVzdC50cyBiL3dlYnNpdGUvc3JjL3Rlc3QvbGl2aW5nVWlUb29sa2l0LnRlc3QudHMKaW5kZXggZGJhYmU3YjI1Yy4uYzQxMTk5MzFiYSAxMDA2NDQKLS0tIGEvd2Vic2l0ZS9zcmMvdGVzdC9saXZpbmdVaVRvb2xraXQudGVzdC50cworKysgYi93ZWJzaXRlL3NyYy90ZXN0L2xpdmluZ1VpVG9vbGtpdC50ZXN0LnRzCkBAIC0yMCw3ICsyMCw3IEBAIGltcG9ydCB7IGRlc2NyaWJlLCBleHBlY3QsIGl0IH0gZnJvbSAndml0ZXN0JwogaW1wb3J0IHsgVEhFTUVfVkFSX05BTUVTIH0gZnJvbSAnLi4vbGliL3dpZGdldFNyY2RvYycKIAogY29uc3QgU0tJTExfRElSID0gcmVzb2x2ZShfX2Rpcm5hbWUsICcuLi8uLi8uLi9zcmMva2lyb19jcmV3L2J1aWx0aW5fc2tpbGxzL2xpdmluZy11aScpCi1jb25zdCBTT1VSQ0UgPSByZWFkRmlsZVN5bmMoam9pbihTS0lMTF9ESVIsICd0b29sa2l0JywgJ2xpdmluZy11aS5qcycpLCAndXRmOCcpCitjb25zdCBTT1VSQ0UgPSByZWFkRmlsZVN5bmMoam9pbihTS0lMTF9ESVIsICd0b29sa2l0JywgJ2xpdmluZy11aS5qcycpLCAndXRmOCcpLnJlcGxhY2UoL1xyXG4vZywgJ1xuJykKIGNvbnN0IExPT0tTX0RJUiA9IGpvaW4oU0tJTExfRElSLCAnbG9va3MnKQogY29uc3QgQlVER0VUX0JZVEVTID0gNTEyMAogY29uc3QgSEVMUEVSUyA9IFsnbG9vcCcsICdmb2xsb3cnLCAnc3ByaW5nJywgJ3NldHRsZScsICdzbW9vdGgnLCAnYnVyc3QnLCAndG91cicsICdyZWFkb3V0JywgJ2ZvY3VzT25lJywgJ2V4cGxvZGUnLCAnY3NzJ10K' | base64 -d | git apply --index
+          test "$(git write-tree)" = 6e79b7357b107572dbd748677f94f90ced3de1f6
+          python - <<'PY'
+          import subprocess
+          raw = b'tree 6e79b7357b107572dbd748677f94f90ced3de1f6\nparent 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9\nauthor Leon <leon.lai.yc@gmail.com> 1793848540 +0800\ncommitter Leon <leon.lai.yc@gmail.com> 1793849361 +0800\n\ntest: read contract fixtures with either newline convention\n'
+          sha = subprocess.check_output(['git','hash-object','-t','commit','-w','--stdin'], input=raw).decode().strip()
+          assert sha == '68190051b8be4bd215b681e327d4928811fb7e39', sha
+          print('RECONSTRUCTED_FINAL_HEAD', sha)
+          PY
+          git checkout --detach 68190051b8be4bd215b681e327d4928811fb7e39
+          git update-ref refs/remotes/origin/main 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9
+          git rev-parse HEAD HEAD^{tree} origin/main
+          test -z "$(git status --porcelain)"
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+      - run: uv pip install --system -e ".[voice,desktop]" --group dev
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: website/electron/package-lock.json
+      - name: install Electron shell dependencies from its lockfile
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: "1"
+        run: npm ci --prefix website/electron --no-audit --no-fund
+      - name: install frontend dependencies
+        run: npm ci --prefix website
+      - name: provision browser system libraries as in CI
+        working-directory: website
+        run: npx playwright install --with-deps chromium
+      - name: exact resolved code floor, backend gate provided by parallel job
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, pathlib, subprocess, time
+          root = pathlib.Path.cwd()
+          head = subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip()
+          expected = '68190051b8be4bd215b681e327d4928811fb7e39'
+          assert head == expected
+          skill = 'src/kiro_crew/builtin_skills/kirocrew-dev/kirocrew-prepare-pr/scripts/resolve_profile.py'
+          profile = json.loads(subprocess.check_output(['python3', skill], text=True))
+          folder = pathlib.Path('/tmp/crlf-pass2-code-floor')
+          folder.mkdir(exist_ok=True)
+          (folder/'profile.json').write_text(json.dumps(profile, indent=2))
+          env = dict(os.environ, PYTHONUTF8='1', PYTHONIOENCODING='utf-8', PYTHONPATH=str(root/'src'))
+          records = []
+          for stage in ('setup', 'gates'):
+              for index, command in enumerate(profile[stage]):
+                  assert subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip() == expected
+                  entry = dict(head=head, stage=stage, index=index, command=command)
+                  if '--surface backend' in command:
+                      entry['status'] = 'provided_by_parallel_backend_job'
+                  else:
+                      path = folder/f'{stage}-{index:02d}.log'
+                      started = time.monotonic()
+                      with path.open('wb') as log:
+                          result = subprocess.run(['bash','-c',command], env=env, stdout=log, stderr=subprocess.STDOUT, timeout=7200)
+                      entry.update(exit=result.returncode, seconds=round(time.monotonic()-started,2))
+                      print(f'::group::CODE_FLOOR {stage} {index}: {command}', flush=True)
+                      print(path.read_text(errors='replace'), flush=True)
+                      print('::endgroup::', flush=True)
+                  records.append(entry)
+                  (folder/'results.json').write_text(json.dumps(records, indent=2))
+                  print('EXACT_HEAD_GATE_RECEIPT ' + json.dumps(entry), flush=True)
+                  if stage == 'setup' and entry.get('exit') != 0:
+                      raise SystemExit('Setup failed; no gates executed')
+          assert subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip() == expected
+          assert not subprocess.check_output(['git','status','--porcelain'], text=True).strip()
+          failures = [entry for entry in records if entry.get('exit',0) != 0]
+          print('CODE_FLOOR_EXECUTED_GATES', len(profile['gates'])-1, 'FAILURES', len(failures), 'BACKEND_GATE_SEPARATE_JOB', flush=True)
+          raise SystemExit(bool(failures))
+          PY
+      - name: pinned Semgrep unchanged diff command
+        shell: bash
+        run: |
+          uv tool run --from "semgrep==1.78.0" semgrep scan --config semgrep/ --baseline-commit "$(git merge-base origin/main HEAD)" --error
+      - name: root conftest and worker-budget static checks
+        run: |
+          isort --check-only conftest.py xdist_budget.py
+          flake8 conftest.py xdist_budget.py
+      - name: flake pattern ratchet
+        env:
+          FLAKE_RATCHET_BASE: 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9
+        run: python -m pytest -n0 test/test_flake_pattern_ratchet.py
+      - name: assert final HEAD after checks
+        if: always()
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = 68190051b8be4bd215b681e327d4928811fb7e39
