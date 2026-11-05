@@ -1,0 +1,169 @@
+name: scratch-28983-20261105
+on:
+  workflow_dispatch:
+  push:
+    branches: ["scratch/codex-28983-gates-20261105"]
+permissions:
+  contents: read
+jobs:
+  backend:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+      - name: reconstruct and assert exact final HEAD
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags https://github.com/kirodotdev/KiroCrew.git 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9
+          git checkout --detach 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9
+          printf '%s' 'ZGlmZiAtLWdpdCBhL3dlYnNpdGUvc3JjL2FwcHMvZGV2LWZsZWV0L0RldkZsZWV0UGFnZS50c3ggYi93ZWJzaXRlL3NyYy9hcHBzL2Rldi1mbGVldC9EZXZGbGVldFBhZ2UudHN4CmluZGV4IDgyMTE1YzMyZGEuLjc5NTE4YmM4OWMgMTAwNjQ0Ci0tLSBhL3dlYnNpdGUvc3JjL2FwcHMvZGV2LWZsZWV0L0RldkZsZWV0UGFnZS50c3gKKysrIGIvd2Vic2l0ZS9zcmMvYXBwcy9kZXYtZmxlZXQvRGV2RmxlZXRQYWdlLnRzeApAQCAtMzEsNyArMzEsNyBAQCBpbXBvcnQgeyBBcGlFcnJvciwgYXBpIGFzIGdhdGV3YXlBcGkgfSBmcm9tICcuLi8uLi9hcGkvY2xpZW50JwogaW1wb3J0IHsgcmVzdGFydEV4aGF1c3RlZE5vdGljZSB9IGZyb20gJy4uLy4uL3V0aWxzL2JhY2tlbmRTdGF0dXMnCiAKIGltcG9ydCB7IGkxOG5UIH0gZnJvbSAnLi4vLi4vaTE4bi90JwotaW1wb3J0IHsgY29tcGFyZVRleHQsIGZtdFJlbGF0aXZlIH0gZnJvbSAnLi4vLi4vaTE4bi9mb3JtYXQnCitpbXBvcnQgeyBjb21wYXJlVGV4dCwgZm10Qnl0ZXMsIGZtdFJlbGF0aXZlIH0gZnJvbSAnLi4vLi4vaTE4bi9mb3JtYXQnCiBpbXBvcnQgewogICByZWFkRGlzbWlzc2VkVW5kb0tleSwgcGVyc2lzdERpc21pc3NlZFVuZG9LZXksIFBPTExfTVMsIHNsZWVwLCBmaWx0ZXJTdGVwTWFya2Vycywgc3luY0ZhaWx1cmVUYWlsLAogICBfYWN0aXZlU3luY1BvbGxzLCBhd2FpdEdhdGV3YXlCYWNrR2xvYmFsLCB0eXBlIFdvcmt0cmVlLCB0eXBlIFVuZG9UYXJnZXQsIHR5cGUgRmxlZXREYXRhLCB0eXBlIFN5bmNSdW4sCkBAIC0xMzU2LDcgKzEzNTYsNyBAQCBleHBvcnQgZGVmYXVsdCBmdW5jdGlvbiBEZXZGbGVldFBhZ2UoKSB7CiAgICAgcHJ1bmVQcm9ncmVzcz17cHJ1bmVQcm9ncmVzc30gc2V0UHJ1bmVQcm9ncmVzcz17c2V0UHJ1bmVQcm9ncmVzc30KICAgLz4KIAotICBjb25zdCBkaXNrR2IgPSBkaXNrPy50b3RhbF9tYiAhPSBudWxsID8gKGRpc2sudG90YWxfbWIgLyAxMDI0KS50b0ZpeGVkKDApICsgJyBHQicgOiAnXHUyMDI2JworICBjb25zdCBkaXNrR2IgPSBkaXNrPy50b3RhbF9tYiAhPSBudWxsID8gZm10Qnl0ZXMoZGlzay50b3RhbF9tYiAqIDEwMjQgKiAxMDI0KSA6ICdcdTIwMjYnCiAKICAgcmV0dXJuICgKICAgICA8PgpkaWZmIC0tZ2l0IGEvd2Vic2l0ZS9zcmMvYXBwcy9kZXYtZmxlZXQvRGV2RmxlZXRQYWdlLnVwZGF0ZWRDb2x1bW5Mb2NhbGUudGVzdC50c3ggYi93ZWJzaXRlL3NyYy9hcHBzL2Rldi1mbGVldC9EZXZGbGVldFBhZ2UudXBkYXRlZENvbHVtbkxvY2FsZS50ZXN0LnRzeAppbmRleCAxNDVkZDBiNDc3Li4yYjk4Yzc2YmE1IDEwMDY0NAotLS0gYS93ZWJzaXRlL3NyYy9hcHBzL2Rldi1mbGVldC9EZXZGbGVldFBhZ2UudXBkYXRlZENvbHVtbkxvY2FsZS50ZXN0LnRzeAorKysgYi93ZWJzaXRlL3NyYy9hcHBzL2Rldi1mbGVldC9EZXZGbGVldFBhZ2UudXBkYXRlZENvbHVtbkxvY2FsZS50ZXN0LnRzeApAQCAtNTksNiArNTksMTMgQEAgZGVzY3JpYmUoJ0RldkZsZWV0UGFnZSBVUERBVEVEIGNvbHVtbicsICgpID0+IHsKICAgICBleHBlY3Qoc2NyZWVuLnF1ZXJ5QnlUZXh0KCczZCcpKS50b0JlTnVsbCgpCiAgIH0pCiAKKyAgaXQoJ3VzZXMgbG9jYWxpemVkIHVuaXRzIGZvciB0aGUgd29ya3RyZWUgZGlzayB0b3RhbCcsIGFzeW5jICgpID0+IHsKKyAgICBhd2FpdCBpMThuZXh0LmNoYW5nZUxhbmd1YWdlKCdmcicpCisgICAgaW5zdGFsbEZsZWV0KFtyb3coJ3d0LWRpc2snLCBub3dTZWMoKSldKQorICAgIHJlbmRlcldpdGhQcm92aWRlcnMoPERldkZsZWV0UGFnZSAvPiwgeyByb3V0ZTogJy9kZXYtZmxlZXQnIH0pCisgICAgZXhwZWN0KGF3YWl0IHNjcmVlbi5maW5kQnlUZXh0KC9eNTMsN1xzKkdvJC8pKS50b0JlSW5UaGVEb2N1bWVudCgpCisgIH0pCisKICAgaXQoJ3JlYWRzIGEgdGltZXN0YW1wIGFoZWFkIG9mIHRoaXMgY2xvY2sgYXMgbm93LCBub3QgYXMgYSBmdXR1cmUgdGltZScsIGFzeW5jICgpID0+IHsKICAgICBhd2FpdCBpMThuZXh0LmNoYW5nZUxhbmd1YWdlKCdlbicpCiAgICAgaW5zdGFsbEZsZWV0KFtyb3coJ3d0LXNrZXdlZCcsIG5vd1NlYygpICsgNjAwKV0pCg==' | base64 -d | git apply --index
+          test "$(git write-tree)" = 9f1a7e76a32c176f62610dce4e20054c939e5762
+          python - <<'PY'
+          import subprocess
+          raw = b'tree 9f1a7e76a32c176f62610dce4e20054c939e5762\nparent 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9\nauthor Leon <leon.lai.yc@gmail.com> 1793849400 +0800\ncommitter Leon <leon.lai.yc@gmail.com> 1793849400 +0800\n\nfix(dev-fleet): localize the worktree disk total\n'
+          sha = subprocess.check_output(['git','hash-object','-t','commit','-w','--stdin'], input=raw).decode().strip()
+          assert sha == '53c8e85fd0eeb5a5818efa3195704e2c73d943ee', sha
+          print('RECONSTRUCTED_FINAL_HEAD', sha)
+          PY
+          git checkout --detach 53c8e85fd0eeb5a5818efa3195704e2c73d943ee
+          git update-ref refs/remotes/origin/main 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9
+          git rev-parse HEAD HEAD^{tree} origin/main
+          test -z "$(git status --porcelain)"
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+      - run: uv pip install --system -e ".[voice,desktop]" --group dev
+      - if: runner.os == 'Windows'
+        uses: ./.github/actions/setup-windows-tests
+      - name: record runner symlink capability
+        shell: bash
+        run: cd test && python -c "import conftest; print('HAS_SYMLINKS', conftest._HAS_SYMLINKS)"
+      - name: required backend selection unchanged
+        shell: bash
+        run: |
+          BASE="$(git merge-base HEAD origin/main)" && SCOPED_TESTS_BASE_REF="$BASE" python scripts/run_scoped_tests.py --surface backend
+      - name: explicit symlink regression nodes
+        if: always()
+        shell: bash
+        run: |
+          python -m pytest -q --no-cov -p no:cacheprovider -rfEs \
+            "src/kiro_crew/apps/builtins/aws_control/crew/packaging/tests/test_concurrent_builds_and_markers.py::test_a_link_at_the_spec_itself_is_still_refused" \
+            "src/kiro_crew/apps/builtins/aws_control/crew/packaging/tests/test_entry_shapes_and_preflight_order.py::test_the_report_preflight_judges_the_entry_before_reading_it"
+      - name: assert final HEAD after tests
+        if: always()
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = 53c8e85fd0eeb5a5818efa3195704e2c73d943ee
+  code-floor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+      - name: reconstruct and assert exact final HEAD
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags https://github.com/kirodotdev/KiroCrew.git 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9
+          git checkout --detach 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9
+          printf '%s' 'ZGlmZiAtLWdpdCBhL3dlYnNpdGUvc3JjL2FwcHMvZGV2LWZsZWV0L0RldkZsZWV0UGFnZS50c3ggYi93ZWJzaXRlL3NyYy9hcHBzL2Rldi1mbGVldC9EZXZGbGVldFBhZ2UudHN4CmluZGV4IDgyMTE1YzMyZGEuLjc5NTE4YmM4OWMgMTAwNjQ0Ci0tLSBhL3dlYnNpdGUvc3JjL2FwcHMvZGV2LWZsZWV0L0RldkZsZWV0UGFnZS50c3gKKysrIGIvd2Vic2l0ZS9zcmMvYXBwcy9kZXYtZmxlZXQvRGV2RmxlZXRQYWdlLnRzeApAQCAtMzEsNyArMzEsNyBAQCBpbXBvcnQgeyBBcGlFcnJvciwgYXBpIGFzIGdhdGV3YXlBcGkgfSBmcm9tICcuLi8uLi9hcGkvY2xpZW50JwogaW1wb3J0IHsgcmVzdGFydEV4aGF1c3RlZE5vdGljZSB9IGZyb20gJy4uLy4uL3V0aWxzL2JhY2tlbmRTdGF0dXMnCiAKIGltcG9ydCB7IGkxOG5UIH0gZnJvbSAnLi4vLi4vaTE4bi90JwotaW1wb3J0IHsgY29tcGFyZVRleHQsIGZtdFJlbGF0aXZlIH0gZnJvbSAnLi4vLi4vaTE4bi9mb3JtYXQnCitpbXBvcnQgeyBjb21wYXJlVGV4dCwgZm10Qnl0ZXMsIGZtdFJlbGF0aXZlIH0gZnJvbSAnLi4vLi4vaTE4bi9mb3JtYXQnCiBpbXBvcnQgewogICByZWFkRGlzbWlzc2VkVW5kb0tleSwgcGVyc2lzdERpc21pc3NlZFVuZG9LZXksIFBPTExfTVMsIHNsZWVwLCBmaWx0ZXJTdGVwTWFya2Vycywgc3luY0ZhaWx1cmVUYWlsLAogICBfYWN0aXZlU3luY1BvbGxzLCBhd2FpdEdhdGV3YXlCYWNrR2xvYmFsLCB0eXBlIFdvcmt0cmVlLCB0eXBlIFVuZG9UYXJnZXQsIHR5cGUgRmxlZXREYXRhLCB0eXBlIFN5bmNSdW4sCkBAIC0xMzU2LDcgKzEzNTYsNyBAQCBleHBvcnQgZGVmYXVsdCBmdW5jdGlvbiBEZXZGbGVldFBhZ2UoKSB7CiAgICAgcHJ1bmVQcm9ncmVzcz17cHJ1bmVQcm9ncmVzc30gc2V0UHJ1bmVQcm9ncmVzcz17c2V0UHJ1bmVQcm9ncmVzc30KICAgLz4KIAotICBjb25zdCBkaXNrR2IgPSBkaXNrPy50b3RhbF9tYiAhPSBudWxsID8gKGRpc2sudG90YWxfbWIgLyAxMDI0KS50b0ZpeGVkKDApICsgJyBHQicgOiAnXHUyMDI2JworICBjb25zdCBkaXNrR2IgPSBkaXNrPy50b3RhbF9tYiAhPSBudWxsID8gZm10Qnl0ZXMoZGlzay50b3RhbF9tYiAqIDEwMjQgKiAxMDI0KSA6ICdcdTIwMjYnCiAKICAgcmV0dXJuICgKICAgICA8PgpkaWZmIC0tZ2l0IGEvd2Vic2l0ZS9zcmMvYXBwcy9kZXYtZmxlZXQvRGV2RmxlZXRQYWdlLnVwZGF0ZWRDb2x1bW5Mb2NhbGUudGVzdC50c3ggYi93ZWJzaXRlL3NyYy9hcHBzL2Rldi1mbGVldC9EZXZGbGVldFBhZ2UudXBkYXRlZENvbHVtbkxvY2FsZS50ZXN0LnRzeAppbmRleCAxNDVkZDBiNDc3Li4yYjk4Yzc2YmE1IDEwMDY0NAotLS0gYS93ZWJzaXRlL3NyYy9hcHBzL2Rldi1mbGVldC9EZXZGbGVldFBhZ2UudXBkYXRlZENvbHVtbkxvY2FsZS50ZXN0LnRzeAorKysgYi93ZWJzaXRlL3NyYy9hcHBzL2Rldi1mbGVldC9EZXZGbGVldFBhZ2UudXBkYXRlZENvbHVtbkxvY2FsZS50ZXN0LnRzeApAQCAtNTksNiArNTksMTMgQEAgZGVzY3JpYmUoJ0RldkZsZWV0UGFnZSBVUERBVEVEIGNvbHVtbicsICgpID0+IHsKICAgICBleHBlY3Qoc2NyZWVuLnF1ZXJ5QnlUZXh0KCczZCcpKS50b0JlTnVsbCgpCiAgIH0pCiAKKyAgaXQoJ3VzZXMgbG9jYWxpemVkIHVuaXRzIGZvciB0aGUgd29ya3RyZWUgZGlzayB0b3RhbCcsIGFzeW5jICgpID0+IHsKKyAgICBhd2FpdCBpMThuZXh0LmNoYW5nZUxhbmd1YWdlKCdmcicpCisgICAgaW5zdGFsbEZsZWV0KFtyb3coJ3d0LWRpc2snLCBub3dTZWMoKSldKQorICAgIHJlbmRlcldpdGhQcm92aWRlcnMoPERldkZsZWV0UGFnZSAvPiwgeyByb3V0ZTogJy9kZXYtZmxlZXQnIH0pCisgICAgZXhwZWN0KGF3YWl0IHNjcmVlbi5maW5kQnlUZXh0KC9eNTMsN1xzKkdvJC8pKS50b0JlSW5UaGVEb2N1bWVudCgpCisgIH0pCisKICAgaXQoJ3JlYWRzIGEgdGltZXN0YW1wIGFoZWFkIG9mIHRoaXMgY2xvY2sgYXMgbm93LCBub3QgYXMgYSBmdXR1cmUgdGltZScsIGFzeW5jICgpID0+IHsKICAgICBhd2FpdCBpMThuZXh0LmNoYW5nZUxhbmd1YWdlKCdlbicpCiAgICAgaW5zdGFsbEZsZWV0KFtyb3coJ3d0LXNrZXdlZCcsIG5vd1NlYygpICsgNjAwKV0pCg==' | base64 -d | git apply --index
+          test "$(git write-tree)" = 9f1a7e76a32c176f62610dce4e20054c939e5762
+          python - <<'PY'
+          import subprocess
+          raw = b'tree 9f1a7e76a32c176f62610dce4e20054c939e5762\nparent 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9\nauthor Leon <leon.lai.yc@gmail.com> 1793849400 +0800\ncommitter Leon <leon.lai.yc@gmail.com> 1793849400 +0800\n\nfix(dev-fleet): localize the worktree disk total\n'
+          sha = subprocess.check_output(['git','hash-object','-t','commit','-w','--stdin'], input=raw).decode().strip()
+          assert sha == '53c8e85fd0eeb5a5818efa3195704e2c73d943ee', sha
+          print('RECONSTRUCTED_FINAL_HEAD', sha)
+          PY
+          git checkout --detach 53c8e85fd0eeb5a5818efa3195704e2c73d943ee
+          git update-ref refs/remotes/origin/main 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9
+          git rev-parse HEAD HEAD^{tree} origin/main
+          test -z "$(git status --porcelain)"
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+      - run: uv pip install --system -e ".[voice,desktop]" --group dev
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: website/electron/package-lock.json
+      - name: install Electron shell dependencies from its lockfile
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: "1"
+        run: npm ci --prefix website/electron --no-audit --no-fund
+      - name: install frontend dependencies
+        run: npm ci --prefix website
+      - name: provision browser system libraries as in CI
+        working-directory: website
+        run: npx playwright install --with-deps chromium
+      - name: exact resolved code floor, backend gate provided by parallel job
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, pathlib, subprocess, time
+          root = pathlib.Path.cwd()
+          head = subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip()
+          expected = '53c8e85fd0eeb5a5818efa3195704e2c73d943ee'
+          assert head == expected
+          skill = 'src/kiro_crew/builtin_skills/kirocrew-dev/kirocrew-prepare-pr/scripts/resolve_profile.py'
+          profile = json.loads(subprocess.check_output(['python3', skill], text=True))
+          folder = pathlib.Path('/tmp/crlf-pass2-code-floor')
+          folder.mkdir(exist_ok=True)
+          (folder/'profile.json').write_text(json.dumps(profile, indent=2))
+          env = dict(os.environ, PYTHONUTF8='1', PYTHONIOENCODING='utf-8', PYTHONPATH=str(root/'src'))
+          records = []
+          for stage in ('setup', 'gates'):
+              for index, command in enumerate(profile[stage]):
+                  assert subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip() == expected
+                  entry = dict(head=head, stage=stage, index=index, command=command)
+                  if '--surface backend' in command:
+                      entry['status'] = 'provided_by_parallel_backend_job'
+                  else:
+                      path = folder/f'{stage}-{index:02d}.log'
+                      started = time.monotonic()
+                      with path.open('wb') as log:
+                          result = subprocess.run(['bash','-c',command], env=env, stdout=log, stderr=subprocess.STDOUT, timeout=7200)
+                      entry.update(exit=result.returncode, seconds=round(time.monotonic()-started,2))
+                      print(f'::group::CODE_FLOOR {stage} {index}: {command}', flush=True)
+                      print(path.read_text(errors='replace'), flush=True)
+                      print('::endgroup::', flush=True)
+                  records.append(entry)
+                  (folder/'results.json').write_text(json.dumps(records, indent=2))
+                  print('EXACT_HEAD_GATE_RECEIPT ' + json.dumps(entry), flush=True)
+                  if stage == 'setup' and entry.get('exit') != 0:
+                      raise SystemExit('Setup failed; no gates executed')
+          assert subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip() == expected
+          assert not subprocess.check_output(['git','status','--porcelain'], text=True).strip()
+          failures = [entry for entry in records if entry.get('exit',0) != 0]
+          print('CODE_FLOOR_EXECUTED_GATES', len(profile['gates'])-1, 'FAILURES', len(failures), 'BACKEND_GATE_SEPARATE_JOB', flush=True)
+          raise SystemExit(bool(failures))
+          PY
+      - name: pinned Semgrep unchanged diff command
+        shell: bash
+        run: |
+          uv tool run --from "semgrep==1.78.0" semgrep scan --config semgrep/ --baseline-commit "$(git merge-base origin/main HEAD)" --error
+      - name: root conftest and worker-budget static checks
+        run: |
+          isort --check-only conftest.py xdist_budget.py
+          flake8 conftest.py xdist_budget.py
+      - name: flake pattern ratchet
+        env:
+          FLAKE_RATCHET_BASE: 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9
+        run: python -m pytest -n0 test/test_flake_pattern_ratchet.py
+      - name: assert final HEAD after checks
+        if: always()
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = 53c8e85fd0eeb5a5818efa3195704e2c73d943ee
