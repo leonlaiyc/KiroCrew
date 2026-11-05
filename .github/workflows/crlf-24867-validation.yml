@@ -1,0 +1,169 @@
+name: scratch-28995-20261105
+on:
+  workflow_dispatch:
+  push:
+    branches: ["scratch/codex-28995-gates-20261105"]
+permissions:
+  contents: read
+jobs:
+  backend:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+      - name: reconstruct and assert exact final HEAD
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags https://github.com/kirodotdev/KiroCrew.git 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9
+          git checkout --detach 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9
+          printf '%s' 'ZGlmZiAtLWdpdCBhL2RvY3Mvc3lzdGVtLXNwZWNzL21vZHVsZXMvaGlzdG9yeS5tZCBiL2RvY3Mvc3lzdGVtLXNwZWNzL21vZHVsZXMvaGlzdG9yeS5tZAppbmRleCAyZjEzZjQwZDQ4Li45ZWE2YzlhMDY0IDEwMDY0NAotLS0gYS9kb2NzL3N5c3RlbS1zcGVjcy9tb2R1bGVzL2hpc3RvcnkubWQKKysrIGIvZG9jcy9zeXN0ZW0tc3BlY3MvbW9kdWxlcy9oaXN0b3J5Lm1kCkBAIC0xMjgsNiArMTI4LDkgQEAgdXNlOgogICAoc2VlICJCb3VuZGVkIHRyYW5zY3JpcHQgcGFnZXMiKSwgYW5kIHRoZSByZWFkcyBvd25lciBpbXBvcnRzIGl0IGluc2lkZSB0aGUKICAgZnVuY3Rpb25zIHRoYXQgdXNlIGl0LCBzbyB0aGUgZmFjYWRlIHNlcnZlcyBub25lIG9mIGl0cyBuYW1lcy4KIC0gYGhpc3RvcnlfcmV3cml0ZS5weWAgb3ducyBsb2NrZWQgY29tcGFjdGlvbiByZXdyaXRlcyBhbmQgc2l6ZS1iYXNlZCByb3RhdGlvbi4KKyAgV2hlbiBjb21wYWN0aW9uIGZhaWxzIGJlZm9yZSByZXBsYWNpbmcgdGhlIHRyYW5zY3JpcHQsIGl0IHJlbW92ZXMgdGhlIGFyY2hpdmUKKyAgY3JlYXRlZCBieSB0aGF0IGF0dGVtcHQgaWYgdGhlIG9yaWdpbmFsIHRyYW5zY3JpcHQgc3RpbGwgaGFzIHRoZSBzYW1lIGlkZW50aXR5LgorICBBIHJlcGxhY2VtZW50IHRoYXQgbGFuZHMgYmVmb3JlIHRoZSBmYWlsdXJlIGtlZXBzIGl0cyBhcmNoaXZlLgogLSBgaGlzdG9yeV9jb25zb2xpZGF0aW9uLnB5YCBkZWZpbmVzIGBIaXN0b3J5Q29uc29saWRhdG9yYCAoY29uc3RydWN0aW9uLAogICBgcmVjb25maWd1cmVgLCByZXRyeSBhY2NvdW50aW5nLCBvZmYtbG9vcCBjb3VudGluZyBhbmQgZXZlcnkgc2NoZWR1bGluZyBlbnRyeQogICBwb2ludCB0aHJvdWdoIGBjb25zb2xpZGF0ZV9ub3dgKSBhbmQgaXMgYSBtaXJyb3JlZCBmYWNhZGUKZGlmZiAtLWdpdCBhL3NyYy9raXJvX2NyZXcvaGlzdG9yeV9yZXdyaXRlLnB5IGIvc3JjL2tpcm9fY3Jldy9oaXN0b3J5X3Jld3JpdGUucHkKaW5kZXggODI4NDAzODhmZi4uZGQxNDVkNmIxNSAxMDA2NDQKLS0tIGEvc3JjL2tpcm9fY3Jldy9oaXN0b3J5X3Jld3JpdGUucHkKKysrIGIvc3JjL2tpcm9fY3Jldy9oaXN0b3J5X3Jld3JpdGUucHkKQEAgLTc3LDYgKzc3LDIzIEBAIGRlZiBfZmlsZV9pZGVudGl0eShwYXRoOiBQYXRoKSAtPiB0dXBsZVtpbnQsIGludCwgaW50XSB8IE5vbmU6CiAgICAgcmV0dXJuIChzdC5zdF9pbm8sIHN0LnN0X3NpemUsIHN0LnN0X210aW1lX25zKQogCiAKK2RlZiBfZGlzY2FyZF9hcmNoaXZlX29mX2ZhaWxlZF9yZXdyaXRlKAorICAgIGFyY2hpdmU6IFBhdGggfCBOb25lLCBwYXRoOiBQYXRoLCBiZWZvcmU6IHR1cGxlW2ludCwgaW50LCBpbnRdIHwgTm9uZQorKSAtPiBOb25lOgorICAgICMgQSByZXBsYWNlbWVudCB0aGF0IGxhbmRlZCBtYXkgaGF2ZSByZW1vdmVkIHRoZSBvbmx5IGxpdmUgY29weSBvZiB0aGUKKyAgICAjIGFyY2hpdmVkIHJvd3MuIERpc2NhcmQgdGhlIGFyY2hpdmUgb25seSB3aGVuIHRoZSBvcmlnaW5hbCBpcyBzdGlsbCB0aGVyZS4KKyAgICBpZiBhcmNoaXZlIGlzIE5vbmUgb3IgYmVmb3JlIGlzIE5vbmUgb3IgX2ZpbGVfaWRlbnRpdHkocGF0aCkgIT0gYmVmb3JlOgorICAgICAgICByZXR1cm4KKyAgICB0cnk6CisgICAgICAgIG9zLnVubGluayhhcmNoaXZlKQorICAgIGV4Y2VwdCBPU0Vycm9yOgorICAgICAgICBfSElTVE9SWV9MT0dHRVIud2FybmluZygKKyAgICAgICAgICAgICJDb3VsZCBub3QgcmVtb3ZlIHRoZSBhcmNoaXZlICVzIG9mIGEgcmV3cml0ZSB0aGF0IGRpZCBub3QgbGFuZCIsCisgICAgICAgICAgICBhcmNoaXZlLAorICAgICAgICAgICAgZXhjX2luZm89VHJ1ZSwKKyAgICAgICAgKQorCisKIGRlZiBfcm90YXRpb25fZ2VuZXJhdGlvbihtZXRhZGF0YTogZGljdFtzdHIsIEFueV0pIC0+IGludDoKICAgICAiIiJUaGUgc3RvcmVkIGBgcm90YXRpb25fZ2VuZXJhdGlvbmBgIGFzIGBgaW50KClgYCByZWFkcyBpdCwgb3IgMCB3aGVuIGl0IGNhbm5vdC4iIiIKICAgICB0cnk6CkBAIC0yNzcsMTIgKzI5NCwxMiBAQCBjbGFzcyBIaXN0b3J5UmV3cml0ZUNvb3JkaW5hdG9yOgogICAgICAgICAjIEFyY2hpdmUgb25seSByb3dzIHRoZSByZXdyaXRlIGRyb3BzLiAgTm9ybWFsaXplZCBKU09OIGNvbXBhcmlzb24KICAgICAgICAgIyBrZWVwcyB0aGUgZGVjaXNpb24gaW5zZW5zaXRpdmUgdG8gb2JqZWN0IGtleSBvcmRlciB3aGlsZSBwcmVzZXJ2aW5nIGEKICAgICAgICAgIyBtYWxmb3JtZWQgcm93IGluIHRoZSBhcmNoaXZlIHJhdGhlciB0aGFuIHNpbGVudGx5IGRlbGV0aW5nIGl0LgorICAgICAgICBkcm9wcGVkOiBsaXN0W3N0cl0gPSBbXQogICAgICAgICBpZiBwYXRoLmV4aXN0cygpOgogICAgICAgICAgICAgb2xkX2xpbmVzID0gcGF0aC5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04Iikuc3BsaXRsaW5lcyhrZWVwZW5kcz1UcnVlKQogICAgICAgICAgICAgaWYgb2xkX2xpbmVzIGFuZCAnIl90eXBlIicgaW4gb2xkX2xpbmVzWzBdOgogICAgICAgICAgICAgICAgIG9sZF9saW5lcyA9IG9sZF9saW5lc1sxOl0KICAgICAgICAgICAgIGtlcHRfc2VyaWFsaXplZCA9IHtqc29uLmR1bXBzKG1lc3NhZ2UsIHNvcnRfa2V5cz1UcnVlKSBmb3IgbWVzc2FnZSBpbiBtZXNzYWdlc30KLSAgICAgICAgICAgIGRyb3BwZWQ6IGxpc3Rbc3RyXSA9IFtdCiAgICAgICAgICAgICBmb3IgbGluZSBpbiBvbGRfbGluZXM6CiAgICAgICAgICAgICAgICAgaWYgbm90IGxpbmUuc3RyaXAoKToKICAgICAgICAgICAgICAgICAgICAgY29udGludWUKQEAgLTI5MywxNiArMzEwLDYgQEAgY2xhc3MgSGlzdG9yeVJld3JpdGVDb29yZGluYXRvcjoKICAgICAgICAgICAgICAgICAgICAgY29udGludWUKICAgICAgICAgICAgICAgICBpZiBub3JtYWxpemVkIG5vdCBpbiBrZXB0X3NlcmlhbGl6ZWQ6CiAgICAgICAgICAgICAgICAgICAgIGRyb3BwZWQuYXBwZW5kKGxpbmUpCi0gICAgICAgICAgICAjIEZhaWwgQ0xPU0VELCBhcyByb3RhdGlvbiBkb2VzOiB0aGUgYXJjaGl2ZSBpcyB0aGUgcHJlY29uZGl0aW9uIG9mCi0gICAgICAgICAgICAjIHRoZSByZXBsYWNlIGJlbG93LCB3aGljaCByZW1vdmVzIHRoZXNlIHJvd3MuIFVudGlsIGl0IGxhbmRzIHRoZQotICAgICAgICAgICAgIyB0cmFuc2NyaXB0IGhvbGRzIHRoZWlyIG9ubHkgY29weSwgc28gYW4gYXJjaGl2ZSBmYWlsdXJlIHJhaXNlcyBhbmQKLSAgICAgICAgICAgICMgdGhlIHRyYW5zY3JpcHQgaXMgbGVmdCB1bnRvdWNoZWQgcmF0aGVyIHRoYW4gY29tcGFjdGVkIGFueXdheS4KLSAgICAgICAgICAgIF9mYWNhZGVfYXJjaGl2ZV9saW5lcygKLSAgICAgICAgICAgICAgICBrZXksCi0gICAgICAgICAgICAgICAgZHJvcHBlZCwKLSAgICAgICAgICAgICAgICByZWFzb249ImNvbXBhY3QiLAotICAgICAgICAgICAgICAgIGJhc2U9c2VsZi5fbG9nLl9kaXIsCi0gICAgICAgICAgICApCiAKICAgICAgICAgIyBDb21wYWN0aW9uIG93bnMgb25seSB0aGVzZSBmb3VyIG1ldGFkYXRhIGZpZWxkcy4gIFJvdGF0aW9uIGlkZW50aXR5LAogICAgICAgICAjIHJldHJ5IGFjY291bnRpbmcsIGFuZCB1c2VyLWZhY2luZyBzbG90IG1ldGFkYXRhIGFyZSBjYXJyaWVkIHRocm91Z2gKQEAgLTMzMCw3ICszMzcsMTUgQEAgY2xhc3MgSGlzdG9yeVJld3JpdGVDb29yZGluYXRvcjoKICAgICAgICAgIyBTeW5jZWQgYmVmb3JlIHRoZSByZW5hbWUgKHJld3JpdGVfdHJhbnNjcmlwdCk6IHRoZSBkcm9wcGVkIHJvd3MgYXJlIG9ubHkKICAgICAgICAgIyBpbiB0aGUgYXJjaGl2ZSBub3csIGFuZCBhbiB1bnN5bmNlZCByZXBsYWNlbWVudCBjYW4gY29tZSBiYWNrIGVtcHR5IGFmdGVyCiAgICAgICAgICMgYSBwb3dlciBsb3NzLCB0YWtpbmcgdGhlIGtlcHQgcm93cyB3aXRoIGl0LgotICAgICAgICByZXdyaXRlX3RyYW5zY3JpcHQocGF0aCwgIiIuam9pbihsaW5lcykpCisgICAgICAgIGNvbnRlbnQgPSAiIi5qb2luKGxpbmVzKQorICAgICAgICBiZWZvcmUgPSBfZmlsZV9pZGVudGl0eShwYXRoKSBpZiBkcm9wcGVkIGVsc2UgTm9uZQorICAgICAgICAjIEFyY2hpdmUgZHVyYWJseSBiZWZvcmUgcmVwbGFjaW5nIHRoZSB0cmFuc2NyaXB0IHdpdGggZmV3ZXIgcm93cy4KKyAgICAgICAgYXJjaGl2ZWQgPSBfZmFjYWRlX2FyY2hpdmVfbGluZXMoa2V5LCBkcm9wcGVkLCByZWFzb249ImNvbXBhY3QiLCBiYXNlPXNlbGYuX2xvZy5fZGlyKQorICAgICAgICB0cnk6CisgICAgICAgICAgICByZXdyaXRlX3RyYW5zY3JpcHQocGF0aCwgY29udGVudCkKKyAgICAgICAgZXhjZXB0IEV4Y2VwdGlvbjoKKyAgICAgICAgICAgIF9kaXNjYXJkX2FyY2hpdmVfb2ZfZmFpbGVkX3Jld3JpdGUoYXJjaGl2ZWQsIHBhdGgsIGJlZm9yZSkKKyAgICAgICAgICAgIHJhaXNlCiAgICAgICAgIF9oaXN0b3J5X2ZhY2FkZSgpLl9yZXN0b3JlX210aW1lKHBhdGgsIHByZXZfbXRpbWUpCiAgICAgICAgIHNlbGYuX2xvZy5faW52YWxpZGF0ZV9jYWNoZShrZXkpCiAKQEAgLTQyMCwyMCArNDM1LDcgQEAgY2xhc3MgSGlzdG9yeVJld3JpdGVDb29yZGluYXRvcjoKICAgICAgICAgdHJ5OgogICAgICAgICAgICAgcmV3cml0ZV90cmFuc2NyaXB0KHBhdGgsIG1ldGFkYXRhX2xpbmUgKyAiIi5qb2luKGtlcHQpKQogICAgICAgICBleGNlcHQgRXhjZXB0aW9uOgotICAgICAgICAgICAgIyBUaGUgdHJhbnNjcmlwdCBpcyB1bmNoYW5nZWQgd2hlbiBpdHMgaWRlbnRpdHkgaXMsIHNvIHRoZSBhcmNoaXZlCi0gICAgICAgICAgICAjIGp1c3Qgd3JpdHRlbiBpcyBhIHNlY29uZCBjb3B5IG9mIHJvd3MgaXQgc3RpbGwgaG9sZHMuIFJlbW92aW5nIGl0Ci0gICAgICAgICAgICAjIGtlZXBzIGEgbGFzdGluZyByZXdyaXRlIGZhdWx0IChhIGZ1bGwgZGlzaykgZnJvbSBhZGRpbmcgb25lIG1vcmUKLSAgICAgICAgICAgICMgY29weSBvbiBldmVyeSBsYXRlciBhcHBlbmQuIEEgcmV3cml0ZSB0aGF0IGRpZCBsYW5kIGFuZCB0aGVuCi0gICAgICAgICAgICAjIGZhaWxlZCBpdHMgZGlyZWN0b3J5IHN5bmMga2VlcHMgdGhlIGFyY2hpdmU6IGl0IGlzIHRoZWlyIG9ubHkgY29weS4KLSAgICAgICAgICAgIGlmIGFyY2hpdmVkIGlzIG5vdCBOb25lIGFuZCBiZWZvcmUgaXMgbm90IE5vbmUgYW5kIF9maWxlX2lkZW50aXR5KHBhdGgpID09IGJlZm9yZToKLSAgICAgICAgICAgICAgICB0cnk6Ci0gICAgICAgICAgICAgICAgICAgIG9zLnVubGluayhhcmNoaXZlZCkKLSAgICAgICAgICAgICAgICBleGNlcHQgT1NFcnJvcjoKLSAgICAgICAgICAgICAgICAgICAgX0hJU1RPUllfTE9HR0VSLndhcm5pbmcoCi0gICAgICAgICAgICAgICAgICAgICAgICAiQ291bGQgbm90IHJlbW92ZSB0aGUgYXJjaGl2ZSAlcyBvZiBhIHJvdGF0aW9uIHRoYXQgZGlkIG5vdCBsYW5kIiwKLSAgICAgICAgICAgICAgICAgICAgICAgIGFyY2hpdmVkLAotICAgICAgICAgICAgICAgICAgICAgICAgZXhjX2luZm89VHJ1ZSwKLSAgICAgICAgICAgICAgICAgICAgKQorICAgICAgICAgICAgX2Rpc2NhcmRfYXJjaGl2ZV9vZl9mYWlsZWRfcmV3cml0ZShhcmNoaXZlZCwgcGF0aCwgYmVmb3JlKQogICAgICAgICAgICAgcmFpc2UKICAgICAgICAgX2hpc3RvcnlfZmFjYWRlKCkuX3Jlc3RvcmVfbXRpbWUocGF0aCwgcHJldl9tdGltZSkKICAgICAgICAgc2VsZi5fbG9nLl9pbnZhbGlkYXRlX2NhY2hlKGtleSkKZGlmZiAtLWdpdCBhL3Rlc3QvdGVzdF9oaXN0b3J5X2NvbXBhY3Rpb25fZmFpbHVyZS5weSBiL3Rlc3QvdGVzdF9oaXN0b3J5X2NvbXBhY3Rpb25fZmFpbHVyZS5weQpuZXcgZmlsZSBtb2RlIDEwMDY0NAppbmRleCAwMDAwMDAwMDAwLi41Mzc2ZmIyMmI2Ci0tLSAvZGV2L251bGwKKysrIGIvdGVzdC90ZXN0X2hpc3RvcnlfY29tcGFjdGlvbl9mYWlsdXJlLnB5CkBAIC0wLDAgKzEsNDEgQEAKKyIiIkFyY2hpdmUgb3duZXJzaGlwIHdoZW4gYSBjb21wYWN0aW9uIHJld3JpdGUgZmFpbHMuIiIiCisKK2Zyb20gcGF0aGxpYiBpbXBvcnQgUGF0aAorCitpbXBvcnQgcHl0ZXN0CisKK2Zyb20ga2lyb19jcmV3IGltcG9ydCBoaXN0b3J5X3Jld3JpdGUKK2Zyb20ga2lyb19jcmV3Lmhpc3RvcnkgaW1wb3J0IEFSQ0hJVkVfRElSX05BTUUsIENvbnZlcnNhdGlvbkxvZworCisKK0BweXRlc3QubWFyay5wYXJhbWV0cml6ZSgicmVwbGFjZWQiLCBbRmFsc2UsIFRydWVdKQorZGVmIHRlc3RfZmFpbGVkX2NvbXBhY3Rpb25fa2VlcHNfYXJjaGl2ZV9vbmx5X2lmX3RyYW5zY3JpcHRfd2FzX3JlcGxhY2VkKAorICAgIHRtcF9wYXRoOiBQYXRoLCBtb25rZXlwYXRjaDogcHl0ZXN0Lk1vbmtleVBhdGNoLCByZXBsYWNlZDogYm9vbAorKSAtPiBOb25lOgorICAgIGxvZyA9IENvbnZlcnNhdGlvbkxvZyhiYXNlX2Rpcj10bXBfcGF0aCkKKyAgICBsb2cuYXBwZW5kKCJrIiwgInVzZXIiLCAiZGlzY2FyZGVkIGJ5IGNvbXBhY3Rpb24iKQorICAgIGxvZy5hcHBlbmQoImsiLCAiYXNzaXN0YW50IiwgImtlcHQgYnkgY29tcGFjdGlvbiIpCisgICAgdHJhbnNjcmlwdCA9IGxvZy5fcGF0aCgiayIpCisgICAgYmVmb3JlID0gdHJhbnNjcmlwdC5yZWFkX2J5dGVzKCkKKyAgICBhcmNoaXZlX2RpciA9IFBhdGgobG9nLl9kaXIpIC8gQVJDSElWRV9ESVJfTkFNRQorICAgIGtlcHQgPSBsb2cuX3JlYWRfbWVzc2FnZXMoImsiKVstMTpdCisgICAgcmVhbF9yZXdyaXRlID0gaGlzdG9yeV9yZXdyaXRlLnJld3JpdGVfdHJhbnNjcmlwdAorCisgICAgZGVmIGZhaWxfcmV3cml0ZShwYXRoOiBQYXRoLCBjb250ZW50OiBzdHIgfCBieXRlcykgLT4gTm9uZToKKyAgICAgICAgaWYgcmVwbGFjZWQ6CisgICAgICAgICAgICByZWFsX3Jld3JpdGUocGF0aCwgY29udGVudCkKKyAgICAgICAgcmFpc2UgT1NFcnJvcigiaW5qZWN0ZWQgcmV3cml0ZSBmYWlsdXJlIikKKworICAgIG1vbmtleXBhdGNoLnNldGF0dHIoaGlzdG9yeV9yZXdyaXRlLCAicmV3cml0ZV90cmFuc2NyaXB0IiwgZmFpbF9yZXdyaXRlKQorCisgICAgd2l0aCBweXRlc3QucmFpc2VzKE9TRXJyb3IsIG1hdGNoPSJpbmplY3RlZCByZXdyaXRlIGZhaWx1cmUiKToKKyAgICAgICAgbG9nLnJld3JpdGVfc2Vzc2lvbigiayIsIGtlcHQpCisKKyAgICBhcmNoaXZlcyA9IGxpc3QoYXJjaGl2ZV9kaXIuZ2xvYigiKi5qc29ubCIpKQorICAgIGlmIHJlcGxhY2VkOgorICAgICAgICBhc3NlcnQgYiJkaXNjYXJkZWQgYnkgY29tcGFjdGlvbiIgbm90IGluIHRyYW5zY3JpcHQucmVhZF9ieXRlcygpCisgICAgICAgIGFzc2VydCBsZW4oYXJjaGl2ZXMpID09IDEKKyAgICAgICAgYXNzZXJ0IGIiZGlzY2FyZGVkIGJ5IGNvbXBhY3Rpb24iIGluIGFyY2hpdmVzWzBdLnJlYWRfYnl0ZXMoKQorICAgIGVsc2U6CisgICAgICAgIGFzc2VydCB0cmFuc2NyaXB0LnJlYWRfYnl0ZXMoKSA9PSBiZWZvcmUKKyAgICAgICAgYXNzZXJ0IGFyY2hpdmVzID09IFtdCg==' | base64 -d | git apply --index
+          test "$(git write-tree)" = e45319dea50a48e747ad8d61381fed4bfaa8dffe
+          python - <<'PY'
+          import subprocess
+          raw = b'tree e45319dea50a48e747ad8d61381fed4bfaa8dffe\nparent 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9\nauthor Leon <leon.lai.yc@gmail.com> 1793848946 +0800\ncommitter Leon <leon.lai.yc@gmail.com> 1793849361 +0800\n\nfix(history): discard archives of compaction rewrites that did not land\n'
+          sha = subprocess.check_output(['git','hash-object','-t','commit','-w','--stdin'], input=raw).decode().strip()
+          assert sha == 'e03becd161d530959dc7dac98b87bf85c2bb0cc4', sha
+          print('RECONSTRUCTED_FINAL_HEAD', sha)
+          PY
+          git checkout --detach e03becd161d530959dc7dac98b87bf85c2bb0cc4
+          git update-ref refs/remotes/origin/main 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9
+          git rev-parse HEAD HEAD^{tree} origin/main
+          test -z "$(git status --porcelain)"
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+      - run: uv pip install --system -e ".[voice,desktop]" --group dev
+      - if: runner.os == 'Windows'
+        uses: ./.github/actions/setup-windows-tests
+      - name: record runner symlink capability
+        shell: bash
+        run: cd test && python -c "import conftest; print('HAS_SYMLINKS', conftest._HAS_SYMLINKS)"
+      - name: required backend selection unchanged
+        shell: bash
+        run: |
+          BASE="$(git merge-base HEAD origin/main)" && SCOPED_TESTS_BASE_REF="$BASE" python scripts/run_scoped_tests.py --surface backend
+      - name: explicit symlink regression nodes
+        if: always()
+        shell: bash
+        run: |
+          python -m pytest -q --no-cov -p no:cacheprovider -rfEs \
+            "src/kiro_crew/apps/builtins/aws_control/crew/packaging/tests/test_concurrent_builds_and_markers.py::test_a_link_at_the_spec_itself_is_still_refused" \
+            "src/kiro_crew/apps/builtins/aws_control/crew/packaging/tests/test_entry_shapes_and_preflight_order.py::test_the_report_preflight_judges_the_entry_before_reading_it"
+      - name: assert final HEAD after tests
+        if: always()
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = e03becd161d530959dc7dac98b87bf85c2bb0cc4
+  code-floor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+      - name: reconstruct and assert exact final HEAD
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags https://github.com/kirodotdev/KiroCrew.git 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9
+          git checkout --detach 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9
+          printf '%s' 'ZGlmZiAtLWdpdCBhL2RvY3Mvc3lzdGVtLXNwZWNzL21vZHVsZXMvaGlzdG9yeS5tZCBiL2RvY3Mvc3lzdGVtLXNwZWNzL21vZHVsZXMvaGlzdG9yeS5tZAppbmRleCAyZjEzZjQwZDQ4Li45ZWE2YzlhMDY0IDEwMDY0NAotLS0gYS9kb2NzL3N5c3RlbS1zcGVjcy9tb2R1bGVzL2hpc3RvcnkubWQKKysrIGIvZG9jcy9zeXN0ZW0tc3BlY3MvbW9kdWxlcy9oaXN0b3J5Lm1kCkBAIC0xMjgsNiArMTI4LDkgQEAgdXNlOgogICAoc2VlICJCb3VuZGVkIHRyYW5zY3JpcHQgcGFnZXMiKSwgYW5kIHRoZSByZWFkcyBvd25lciBpbXBvcnRzIGl0IGluc2lkZSB0aGUKICAgZnVuY3Rpb25zIHRoYXQgdXNlIGl0LCBzbyB0aGUgZmFjYWRlIHNlcnZlcyBub25lIG9mIGl0cyBuYW1lcy4KIC0gYGhpc3RvcnlfcmV3cml0ZS5weWAgb3ducyBsb2NrZWQgY29tcGFjdGlvbiByZXdyaXRlcyBhbmQgc2l6ZS1iYXNlZCByb3RhdGlvbi4KKyAgV2hlbiBjb21wYWN0aW9uIGZhaWxzIGJlZm9yZSByZXBsYWNpbmcgdGhlIHRyYW5zY3JpcHQsIGl0IHJlbW92ZXMgdGhlIGFyY2hpdmUKKyAgY3JlYXRlZCBieSB0aGF0IGF0dGVtcHQgaWYgdGhlIG9yaWdpbmFsIHRyYW5zY3JpcHQgc3RpbGwgaGFzIHRoZSBzYW1lIGlkZW50aXR5LgorICBBIHJlcGxhY2VtZW50IHRoYXQgbGFuZHMgYmVmb3JlIHRoZSBmYWlsdXJlIGtlZXBzIGl0cyBhcmNoaXZlLgogLSBgaGlzdG9yeV9jb25zb2xpZGF0aW9uLnB5YCBkZWZpbmVzIGBIaXN0b3J5Q29uc29saWRhdG9yYCAoY29uc3RydWN0aW9uLAogICBgcmVjb25maWd1cmVgLCByZXRyeSBhY2NvdW50aW5nLCBvZmYtbG9vcCBjb3VudGluZyBhbmQgZXZlcnkgc2NoZWR1bGluZyBlbnRyeQogICBwb2ludCB0aHJvdWdoIGBjb25zb2xpZGF0ZV9ub3dgKSBhbmQgaXMgYSBtaXJyb3JlZCBmYWNhZGUKZGlmZiAtLWdpdCBhL3NyYy9raXJvX2NyZXcvaGlzdG9yeV9yZXdyaXRlLnB5IGIvc3JjL2tpcm9fY3Jldy9oaXN0b3J5X3Jld3JpdGUucHkKaW5kZXggODI4NDAzODhmZi4uZGQxNDVkNmIxNSAxMDA2NDQKLS0tIGEvc3JjL2tpcm9fY3Jldy9oaXN0b3J5X3Jld3JpdGUucHkKKysrIGIvc3JjL2tpcm9fY3Jldy9oaXN0b3J5X3Jld3JpdGUucHkKQEAgLTc3LDYgKzc3LDIzIEBAIGRlZiBfZmlsZV9pZGVudGl0eShwYXRoOiBQYXRoKSAtPiB0dXBsZVtpbnQsIGludCwgaW50XSB8IE5vbmU6CiAgICAgcmV0dXJuIChzdC5zdF9pbm8sIHN0LnN0X3NpemUsIHN0LnN0X210aW1lX25zKQogCiAKK2RlZiBfZGlzY2FyZF9hcmNoaXZlX29mX2ZhaWxlZF9yZXdyaXRlKAorICAgIGFyY2hpdmU6IFBhdGggfCBOb25lLCBwYXRoOiBQYXRoLCBiZWZvcmU6IHR1cGxlW2ludCwgaW50LCBpbnRdIHwgTm9uZQorKSAtPiBOb25lOgorICAgICMgQSByZXBsYWNlbWVudCB0aGF0IGxhbmRlZCBtYXkgaGF2ZSByZW1vdmVkIHRoZSBvbmx5IGxpdmUgY29weSBvZiB0aGUKKyAgICAjIGFyY2hpdmVkIHJvd3MuIERpc2NhcmQgdGhlIGFyY2hpdmUgb25seSB3aGVuIHRoZSBvcmlnaW5hbCBpcyBzdGlsbCB0aGVyZS4KKyAgICBpZiBhcmNoaXZlIGlzIE5vbmUgb3IgYmVmb3JlIGlzIE5vbmUgb3IgX2ZpbGVfaWRlbnRpdHkocGF0aCkgIT0gYmVmb3JlOgorICAgICAgICByZXR1cm4KKyAgICB0cnk6CisgICAgICAgIG9zLnVubGluayhhcmNoaXZlKQorICAgIGV4Y2VwdCBPU0Vycm9yOgorICAgICAgICBfSElTVE9SWV9MT0dHRVIud2FybmluZygKKyAgICAgICAgICAgICJDb3VsZCBub3QgcmVtb3ZlIHRoZSBhcmNoaXZlICVzIG9mIGEgcmV3cml0ZSB0aGF0IGRpZCBub3QgbGFuZCIsCisgICAgICAgICAgICBhcmNoaXZlLAorICAgICAgICAgICAgZXhjX2luZm89VHJ1ZSwKKyAgICAgICAgKQorCisKIGRlZiBfcm90YXRpb25fZ2VuZXJhdGlvbihtZXRhZGF0YTogZGljdFtzdHIsIEFueV0pIC0+IGludDoKICAgICAiIiJUaGUgc3RvcmVkIGBgcm90YXRpb25fZ2VuZXJhdGlvbmBgIGFzIGBgaW50KClgYCByZWFkcyBpdCwgb3IgMCB3aGVuIGl0IGNhbm5vdC4iIiIKICAgICB0cnk6CkBAIC0yNzcsMTIgKzI5NCwxMiBAQCBjbGFzcyBIaXN0b3J5UmV3cml0ZUNvb3JkaW5hdG9yOgogICAgICAgICAjIEFyY2hpdmUgb25seSByb3dzIHRoZSByZXdyaXRlIGRyb3BzLiAgTm9ybWFsaXplZCBKU09OIGNvbXBhcmlzb24KICAgICAgICAgIyBrZWVwcyB0aGUgZGVjaXNpb24gaW5zZW5zaXRpdmUgdG8gb2JqZWN0IGtleSBvcmRlciB3aGlsZSBwcmVzZXJ2aW5nIGEKICAgICAgICAgIyBtYWxmb3JtZWQgcm93IGluIHRoZSBhcmNoaXZlIHJhdGhlciB0aGFuIHNpbGVudGx5IGRlbGV0aW5nIGl0LgorICAgICAgICBkcm9wcGVkOiBsaXN0W3N0cl0gPSBbXQogICAgICAgICBpZiBwYXRoLmV4aXN0cygpOgogICAgICAgICAgICAgb2xkX2xpbmVzID0gcGF0aC5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04Iikuc3BsaXRsaW5lcyhrZWVwZW5kcz1UcnVlKQogICAgICAgICAgICAgaWYgb2xkX2xpbmVzIGFuZCAnIl90eXBlIicgaW4gb2xkX2xpbmVzWzBdOgogICAgICAgICAgICAgICAgIG9sZF9saW5lcyA9IG9sZF9saW5lc1sxOl0KICAgICAgICAgICAgIGtlcHRfc2VyaWFsaXplZCA9IHtqc29uLmR1bXBzKG1lc3NhZ2UsIHNvcnRfa2V5cz1UcnVlKSBmb3IgbWVzc2FnZSBpbiBtZXNzYWdlc30KLSAgICAgICAgICAgIGRyb3BwZWQ6IGxpc3Rbc3RyXSA9IFtdCiAgICAgICAgICAgICBmb3IgbGluZSBpbiBvbGRfbGluZXM6CiAgICAgICAgICAgICAgICAgaWYgbm90IGxpbmUuc3RyaXAoKToKICAgICAgICAgICAgICAgICAgICAgY29udGludWUKQEAgLTI5MywxNiArMzEwLDYgQEAgY2xhc3MgSGlzdG9yeVJld3JpdGVDb29yZGluYXRvcjoKICAgICAgICAgICAgICAgICAgICAgY29udGludWUKICAgICAgICAgICAgICAgICBpZiBub3JtYWxpemVkIG5vdCBpbiBrZXB0X3NlcmlhbGl6ZWQ6CiAgICAgICAgICAgICAgICAgICAgIGRyb3BwZWQuYXBwZW5kKGxpbmUpCi0gICAgICAgICAgICAjIEZhaWwgQ0xPU0VELCBhcyByb3RhdGlvbiBkb2VzOiB0aGUgYXJjaGl2ZSBpcyB0aGUgcHJlY29uZGl0aW9uIG9mCi0gICAgICAgICAgICAjIHRoZSByZXBsYWNlIGJlbG93LCB3aGljaCByZW1vdmVzIHRoZXNlIHJvd3MuIFVudGlsIGl0IGxhbmRzIHRoZQotICAgICAgICAgICAgIyB0cmFuc2NyaXB0IGhvbGRzIHRoZWlyIG9ubHkgY29weSwgc28gYW4gYXJjaGl2ZSBmYWlsdXJlIHJhaXNlcyBhbmQKLSAgICAgICAgICAgICMgdGhlIHRyYW5zY3JpcHQgaXMgbGVmdCB1bnRvdWNoZWQgcmF0aGVyIHRoYW4gY29tcGFjdGVkIGFueXdheS4KLSAgICAgICAgICAgIF9mYWNhZGVfYXJjaGl2ZV9saW5lcygKLSAgICAgICAgICAgICAgICBrZXksCi0gICAgICAgICAgICAgICAgZHJvcHBlZCwKLSAgICAgICAgICAgICAgICByZWFzb249ImNvbXBhY3QiLAotICAgICAgICAgICAgICAgIGJhc2U9c2VsZi5fbG9nLl9kaXIsCi0gICAgICAgICAgICApCiAKICAgICAgICAgIyBDb21wYWN0aW9uIG93bnMgb25seSB0aGVzZSBmb3VyIG1ldGFkYXRhIGZpZWxkcy4gIFJvdGF0aW9uIGlkZW50aXR5LAogICAgICAgICAjIHJldHJ5IGFjY291bnRpbmcsIGFuZCB1c2VyLWZhY2luZyBzbG90IG1ldGFkYXRhIGFyZSBjYXJyaWVkIHRocm91Z2gKQEAgLTMzMCw3ICszMzcsMTUgQEAgY2xhc3MgSGlzdG9yeVJld3JpdGVDb29yZGluYXRvcjoKICAgICAgICAgIyBTeW5jZWQgYmVmb3JlIHRoZSByZW5hbWUgKHJld3JpdGVfdHJhbnNjcmlwdCk6IHRoZSBkcm9wcGVkIHJvd3MgYXJlIG9ubHkKICAgICAgICAgIyBpbiB0aGUgYXJjaGl2ZSBub3csIGFuZCBhbiB1bnN5bmNlZCByZXBsYWNlbWVudCBjYW4gY29tZSBiYWNrIGVtcHR5IGFmdGVyCiAgICAgICAgICMgYSBwb3dlciBsb3NzLCB0YWtpbmcgdGhlIGtlcHQgcm93cyB3aXRoIGl0LgotICAgICAgICByZXdyaXRlX3RyYW5zY3JpcHQocGF0aCwgIiIuam9pbihsaW5lcykpCisgICAgICAgIGNvbnRlbnQgPSAiIi5qb2luKGxpbmVzKQorICAgICAgICBiZWZvcmUgPSBfZmlsZV9pZGVudGl0eShwYXRoKSBpZiBkcm9wcGVkIGVsc2UgTm9uZQorICAgICAgICAjIEFyY2hpdmUgZHVyYWJseSBiZWZvcmUgcmVwbGFjaW5nIHRoZSB0cmFuc2NyaXB0IHdpdGggZmV3ZXIgcm93cy4KKyAgICAgICAgYXJjaGl2ZWQgPSBfZmFjYWRlX2FyY2hpdmVfbGluZXMoa2V5LCBkcm9wcGVkLCByZWFzb249ImNvbXBhY3QiLCBiYXNlPXNlbGYuX2xvZy5fZGlyKQorICAgICAgICB0cnk6CisgICAgICAgICAgICByZXdyaXRlX3RyYW5zY3JpcHQocGF0aCwgY29udGVudCkKKyAgICAgICAgZXhjZXB0IEV4Y2VwdGlvbjoKKyAgICAgICAgICAgIF9kaXNjYXJkX2FyY2hpdmVfb2ZfZmFpbGVkX3Jld3JpdGUoYXJjaGl2ZWQsIHBhdGgsIGJlZm9yZSkKKyAgICAgICAgICAgIHJhaXNlCiAgICAgICAgIF9oaXN0b3J5X2ZhY2FkZSgpLl9yZXN0b3JlX210aW1lKHBhdGgsIHByZXZfbXRpbWUpCiAgICAgICAgIHNlbGYuX2xvZy5faW52YWxpZGF0ZV9jYWNoZShrZXkpCiAKQEAgLTQyMCwyMCArNDM1LDcgQEAgY2xhc3MgSGlzdG9yeVJld3JpdGVDb29yZGluYXRvcjoKICAgICAgICAgdHJ5OgogICAgICAgICAgICAgcmV3cml0ZV90cmFuc2NyaXB0KHBhdGgsIG1ldGFkYXRhX2xpbmUgKyAiIi5qb2luKGtlcHQpKQogICAgICAgICBleGNlcHQgRXhjZXB0aW9uOgotICAgICAgICAgICAgIyBUaGUgdHJhbnNjcmlwdCBpcyB1bmNoYW5nZWQgd2hlbiBpdHMgaWRlbnRpdHkgaXMsIHNvIHRoZSBhcmNoaXZlCi0gICAgICAgICAgICAjIGp1c3Qgd3JpdHRlbiBpcyBhIHNlY29uZCBjb3B5IG9mIHJvd3MgaXQgc3RpbGwgaG9sZHMuIFJlbW92aW5nIGl0Ci0gICAgICAgICAgICAjIGtlZXBzIGEgbGFzdGluZyByZXdyaXRlIGZhdWx0IChhIGZ1bGwgZGlzaykgZnJvbSBhZGRpbmcgb25lIG1vcmUKLSAgICAgICAgICAgICMgY29weSBvbiBldmVyeSBsYXRlciBhcHBlbmQuIEEgcmV3cml0ZSB0aGF0IGRpZCBsYW5kIGFuZCB0aGVuCi0gICAgICAgICAgICAjIGZhaWxlZCBpdHMgZGlyZWN0b3J5IHN5bmMga2VlcHMgdGhlIGFyY2hpdmU6IGl0IGlzIHRoZWlyIG9ubHkgY29weS4KLSAgICAgICAgICAgIGlmIGFyY2hpdmVkIGlzIG5vdCBOb25lIGFuZCBiZWZvcmUgaXMgbm90IE5vbmUgYW5kIF9maWxlX2lkZW50aXR5KHBhdGgpID09IGJlZm9yZToKLSAgICAgICAgICAgICAgICB0cnk6Ci0gICAgICAgICAgICAgICAgICAgIG9zLnVubGluayhhcmNoaXZlZCkKLSAgICAgICAgICAgICAgICBleGNlcHQgT1NFcnJvcjoKLSAgICAgICAgICAgICAgICAgICAgX0hJU1RPUllfTE9HR0VSLndhcm5pbmcoCi0gICAgICAgICAgICAgICAgICAgICAgICAiQ291bGQgbm90IHJlbW92ZSB0aGUgYXJjaGl2ZSAlcyBvZiBhIHJvdGF0aW9uIHRoYXQgZGlkIG5vdCBsYW5kIiwKLSAgICAgICAgICAgICAgICAgICAgICAgIGFyY2hpdmVkLAotICAgICAgICAgICAgICAgICAgICAgICAgZXhjX2luZm89VHJ1ZSwKLSAgICAgICAgICAgICAgICAgICAgKQorICAgICAgICAgICAgX2Rpc2NhcmRfYXJjaGl2ZV9vZl9mYWlsZWRfcmV3cml0ZShhcmNoaXZlZCwgcGF0aCwgYmVmb3JlKQogICAgICAgICAgICAgcmFpc2UKICAgICAgICAgX2hpc3RvcnlfZmFjYWRlKCkuX3Jlc3RvcmVfbXRpbWUocGF0aCwgcHJldl9tdGltZSkKICAgICAgICAgc2VsZi5fbG9nLl9pbnZhbGlkYXRlX2NhY2hlKGtleSkKZGlmZiAtLWdpdCBhL3Rlc3QvdGVzdF9oaXN0b3J5X2NvbXBhY3Rpb25fZmFpbHVyZS5weSBiL3Rlc3QvdGVzdF9oaXN0b3J5X2NvbXBhY3Rpb25fZmFpbHVyZS5weQpuZXcgZmlsZSBtb2RlIDEwMDY0NAppbmRleCAwMDAwMDAwMDAwLi41Mzc2ZmIyMmI2Ci0tLSAvZGV2L251bGwKKysrIGIvdGVzdC90ZXN0X2hpc3RvcnlfY29tcGFjdGlvbl9mYWlsdXJlLnB5CkBAIC0wLDAgKzEsNDEgQEAKKyIiIkFyY2hpdmUgb3duZXJzaGlwIHdoZW4gYSBjb21wYWN0aW9uIHJld3JpdGUgZmFpbHMuIiIiCisKK2Zyb20gcGF0aGxpYiBpbXBvcnQgUGF0aAorCitpbXBvcnQgcHl0ZXN0CisKK2Zyb20ga2lyb19jcmV3IGltcG9ydCBoaXN0b3J5X3Jld3JpdGUKK2Zyb20ga2lyb19jcmV3Lmhpc3RvcnkgaW1wb3J0IEFSQ0hJVkVfRElSX05BTUUsIENvbnZlcnNhdGlvbkxvZworCisKK0BweXRlc3QubWFyay5wYXJhbWV0cml6ZSgicmVwbGFjZWQiLCBbRmFsc2UsIFRydWVdKQorZGVmIHRlc3RfZmFpbGVkX2NvbXBhY3Rpb25fa2VlcHNfYXJjaGl2ZV9vbmx5X2lmX3RyYW5zY3JpcHRfd2FzX3JlcGxhY2VkKAorICAgIHRtcF9wYXRoOiBQYXRoLCBtb25rZXlwYXRjaDogcHl0ZXN0Lk1vbmtleVBhdGNoLCByZXBsYWNlZDogYm9vbAorKSAtPiBOb25lOgorICAgIGxvZyA9IENvbnZlcnNhdGlvbkxvZyhiYXNlX2Rpcj10bXBfcGF0aCkKKyAgICBsb2cuYXBwZW5kKCJrIiwgInVzZXIiLCAiZGlzY2FyZGVkIGJ5IGNvbXBhY3Rpb24iKQorICAgIGxvZy5hcHBlbmQoImsiLCAiYXNzaXN0YW50IiwgImtlcHQgYnkgY29tcGFjdGlvbiIpCisgICAgdHJhbnNjcmlwdCA9IGxvZy5fcGF0aCgiayIpCisgICAgYmVmb3JlID0gdHJhbnNjcmlwdC5yZWFkX2J5dGVzKCkKKyAgICBhcmNoaXZlX2RpciA9IFBhdGgobG9nLl9kaXIpIC8gQVJDSElWRV9ESVJfTkFNRQorICAgIGtlcHQgPSBsb2cuX3JlYWRfbWVzc2FnZXMoImsiKVstMTpdCisgICAgcmVhbF9yZXdyaXRlID0gaGlzdG9yeV9yZXdyaXRlLnJld3JpdGVfdHJhbnNjcmlwdAorCisgICAgZGVmIGZhaWxfcmV3cml0ZShwYXRoOiBQYXRoLCBjb250ZW50OiBzdHIgfCBieXRlcykgLT4gTm9uZToKKyAgICAgICAgaWYgcmVwbGFjZWQ6CisgICAgICAgICAgICByZWFsX3Jld3JpdGUocGF0aCwgY29udGVudCkKKyAgICAgICAgcmFpc2UgT1NFcnJvcigiaW5qZWN0ZWQgcmV3cml0ZSBmYWlsdXJlIikKKworICAgIG1vbmtleXBhdGNoLnNldGF0dHIoaGlzdG9yeV9yZXdyaXRlLCAicmV3cml0ZV90cmFuc2NyaXB0IiwgZmFpbF9yZXdyaXRlKQorCisgICAgd2l0aCBweXRlc3QucmFpc2VzKE9TRXJyb3IsIG1hdGNoPSJpbmplY3RlZCByZXdyaXRlIGZhaWx1cmUiKToKKyAgICAgICAgbG9nLnJld3JpdGVfc2Vzc2lvbigiayIsIGtlcHQpCisKKyAgICBhcmNoaXZlcyA9IGxpc3QoYXJjaGl2ZV9kaXIuZ2xvYigiKi5qc29ubCIpKQorICAgIGlmIHJlcGxhY2VkOgorICAgICAgICBhc3NlcnQgYiJkaXNjYXJkZWQgYnkgY29tcGFjdGlvbiIgbm90IGluIHRyYW5zY3JpcHQucmVhZF9ieXRlcygpCisgICAgICAgIGFzc2VydCBsZW4oYXJjaGl2ZXMpID09IDEKKyAgICAgICAgYXNzZXJ0IGIiZGlzY2FyZGVkIGJ5IGNvbXBhY3Rpb24iIGluIGFyY2hpdmVzWzBdLnJlYWRfYnl0ZXMoKQorICAgIGVsc2U6CisgICAgICAgIGFzc2VydCB0cmFuc2NyaXB0LnJlYWRfYnl0ZXMoKSA9PSBiZWZvcmUKKyAgICAgICAgYXNzZXJ0IGFyY2hpdmVzID09IFtdCg==' | base64 -d | git apply --index
+          test "$(git write-tree)" = e45319dea50a48e747ad8d61381fed4bfaa8dffe
+          python - <<'PY'
+          import subprocess
+          raw = b'tree e45319dea50a48e747ad8d61381fed4bfaa8dffe\nparent 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9\nauthor Leon <leon.lai.yc@gmail.com> 1793848946 +0800\ncommitter Leon <leon.lai.yc@gmail.com> 1793849361 +0800\n\nfix(history): discard archives of compaction rewrites that did not land\n'
+          sha = subprocess.check_output(['git','hash-object','-t','commit','-w','--stdin'], input=raw).decode().strip()
+          assert sha == 'e03becd161d530959dc7dac98b87bf85c2bb0cc4', sha
+          print('RECONSTRUCTED_FINAL_HEAD', sha)
+          PY
+          git checkout --detach e03becd161d530959dc7dac98b87bf85c2bb0cc4
+          git update-ref refs/remotes/origin/main 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9
+          git rev-parse HEAD HEAD^{tree} origin/main
+          test -z "$(git status --porcelain)"
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+      - run: uv pip install --system -e ".[voice,desktop]" --group dev
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: website/electron/package-lock.json
+      - name: install Electron shell dependencies from its lockfile
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: "1"
+        run: npm ci --prefix website/electron --no-audit --no-fund
+      - name: install frontend dependencies
+        run: npm ci --prefix website
+      - name: provision browser system libraries as in CI
+        working-directory: website
+        run: npx playwright install --with-deps chromium
+      - name: exact resolved code floor, backend gate provided by parallel job
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, pathlib, subprocess, time
+          root = pathlib.Path.cwd()
+          head = subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip()
+          expected = 'e03becd161d530959dc7dac98b87bf85c2bb0cc4'
+          assert head == expected
+          skill = 'src/kiro_crew/builtin_skills/kirocrew-dev/kirocrew-prepare-pr/scripts/resolve_profile.py'
+          profile = json.loads(subprocess.check_output(['python3', skill], text=True))
+          folder = pathlib.Path('/tmp/crlf-pass2-code-floor')
+          folder.mkdir(exist_ok=True)
+          (folder/'profile.json').write_text(json.dumps(profile, indent=2))
+          env = dict(os.environ, PYTHONUTF8='1', PYTHONIOENCODING='utf-8', PYTHONPATH=str(root/'src'))
+          records = []
+          for stage in ('setup', 'gates'):
+              for index, command in enumerate(profile[stage]):
+                  assert subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip() == expected
+                  entry = dict(head=head, stage=stage, index=index, command=command)
+                  if '--surface backend' in command:
+                      entry['status'] = 'provided_by_parallel_backend_job'
+                  else:
+                      path = folder/f'{stage}-{index:02d}.log'
+                      started = time.monotonic()
+                      with path.open('wb') as log:
+                          result = subprocess.run(['bash','-c',command], env=env, stdout=log, stderr=subprocess.STDOUT, timeout=7200)
+                      entry.update(exit=result.returncode, seconds=round(time.monotonic()-started,2))
+                      print(f'::group::CODE_FLOOR {stage} {index}: {command}', flush=True)
+                      print(path.read_text(errors='replace'), flush=True)
+                      print('::endgroup::', flush=True)
+                  records.append(entry)
+                  (folder/'results.json').write_text(json.dumps(records, indent=2))
+                  print('EXACT_HEAD_GATE_RECEIPT ' + json.dumps(entry), flush=True)
+                  if stage == 'setup' and entry.get('exit') != 0:
+                      raise SystemExit('Setup failed; no gates executed')
+          assert subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip() == expected
+          assert not subprocess.check_output(['git','status','--porcelain'], text=True).strip()
+          failures = [entry for entry in records if entry.get('exit',0) != 0]
+          print('CODE_FLOOR_EXECUTED_GATES', len(profile['gates'])-1, 'FAILURES', len(failures), 'BACKEND_GATE_SEPARATE_JOB', flush=True)
+          raise SystemExit(bool(failures))
+          PY
+      - name: pinned Semgrep unchanged diff command
+        shell: bash
+        run: |
+          uv tool run --from "semgrep==1.78.0" semgrep scan --config semgrep/ --baseline-commit "$(git merge-base origin/main HEAD)" --error
+      - name: root conftest and worker-budget static checks
+        run: |
+          isort --check-only conftest.py xdist_budget.py
+          flake8 conftest.py xdist_budget.py
+      - name: flake pattern ratchet
+        env:
+          FLAKE_RATCHET_BASE: 03dc8a162e3a9b3c869af6e02c0979430fd1d7c9
+        run: python -m pytest -n0 test/test_flake_pattern_ratchet.py
+      - name: assert final HEAD after checks
+        if: always()
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = e03becd161d530959dc7dac98b87bf85c2bb0cc4
