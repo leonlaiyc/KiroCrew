@@ -1,0 +1,26 @@
+name: scratch-claude-semgrep-25314ea
+on:
+  push:
+    branches: ["scratch/claude-semgrep-25314ea"]
+permissions:
+  contents: read
+jobs:
+  semgrep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+      - name: check out the exact head and base
+        run: |
+          set -euo pipefail
+          git fetch --no-tags https://github.com/kirodotdev/KiroCrew.git 8cd53380b79084d4013981637502cf7b01862366
+          git checkout --detach 25314ea7692d1b063105125acc9117a6adcd5aed
+          test "$(git rev-parse HEAD)" = 25314ea7692d1b063105125acc9117a6adcd5aed
+          test "$(git merge-base HEAD 8cd53380b79084d4013981637502cf7b01862366)" = 8cd53380b79084d4013981637502cf7b01862366
+          git log -1 --format='%H %s'
+      - name: pinned Semgrep on the diff
+        run: uv tool run --from "semgrep==1.78.0" semgrep scan --config semgrep/ --baseline-commit 8cd53380b79084d4013981637502cf7b01862366 --error
