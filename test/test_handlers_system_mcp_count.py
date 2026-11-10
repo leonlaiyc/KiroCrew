@@ -51,7 +51,7 @@ class TestMcpProcessCountLinux:
         orig_read_bytes = Path.read_bytes
 
         def fake_read_bytes(self_path: Path) -> bytes:
-            parts = str(self_path).split("/")
+            parts = self_path.as_posix().split("/")
             if len(parts) >= 4 and parts[1] == "proc" and parts[3] == "cmdline":
                 pid = parts[2]
                 if pid in fake_procs:
