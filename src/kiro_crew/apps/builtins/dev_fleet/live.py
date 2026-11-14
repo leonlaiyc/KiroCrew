@@ -766,7 +766,7 @@ async def _make_live_inner(
     existing worktree (``unknown_path`` / ``missing_path``); NOT inside a pod,
     fail-CLOSED on indeterminate pod status (``pod`` / ``pod_indeterminate``);
     not already live (``already_live``); the worktree has its own executable
-    ``.venv/bin/kirocrew`` (else Provision -> ``missing_venv`` when absent,
+    ``live_target.target_bin`` (else Provision -> ``missing_venv`` when absent,
     ``venv_not_executable`` when present but not +x) and a built SPA
     ``dist/index.html`` (else Pull+Build -> ``missing_dist``).
 
@@ -1121,7 +1121,10 @@ async def _make_live_inner(
             ),
         }
 
-    kcbin = real / ".venv" / "bin" / "kirocrew"
+    # The same entry point the pointer write validates and the cutover execs:
+    # ``.venv/bin/kirocrew``, or ``.venv/Scripts/kirocrew.exe`` on Windows.
+    kcbin = live_target.target_bin(real)
+    kcbin_rel = kcbin.relative_to(real)
     dist_index = real / "src" / "kiro_crew" / "static" / "dist" / "index.html"
 
     def _validate_artifacts_sync() -> tuple[str, str] | None:
@@ -1136,7 +1139,7 @@ async def _make_live_inner(
             return (
                 "missing_venv",
                 (
-                    f"{real.name} has no .venv/bin/kirocrew — Provision it first "
+                    f"{real.name} has no {kcbin_rel} — Provision it first "
                     "(row menu \u2192 Provision) before making it live"
                 ),
             )
@@ -1149,7 +1152,7 @@ async def _make_live_inner(
             return (
                 "venv_not_executable",
                 (
-                    f"{real.name} has a non-executable .venv/bin/kirocrew — run "
+                    f"{real.name} has a non-executable {kcbin_rel} — run "
                     "`chmod +x` on it or re-Provision the worktree before making "
                     "it live (a non-executable binary stops the live gateway but "
                     "cannot start the replacement, leaving no gateway running)"

@@ -441,7 +441,7 @@ async def test_make_live_artifact_changed_before_lock_is_revalidated(monkeypatch
     _stub_make_live(monkeypatch, wt, pointer_dir=ptr_dir)
     monkeypatch.setattr(live_mod, "_MAKE_LIVE_COMMITTED", False)
 
-    kcbin = wt / ".venv" / "bin" / "kirocrew"
+    kcbin = live_mod.live_target.target_bin(wt)
 
     real_lock = asyncio.Lock()
 

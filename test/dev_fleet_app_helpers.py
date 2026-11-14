@@ -289,18 +289,19 @@ def _reset_shutdown_admission_state():
 
 
 def _mk_make_live_wt(tmp_path, *, venv: bool = False, dist: bool = False, venv_exec: bool = True):
-    """Build a fake worktree dir with optional .venv/bin/kirocrew and built dist.
+    """Build a fake worktree dir with an optional venv launcher and built dist.
 
-    When ``venv`` is set the fake ``.venv/bin/kirocrew`` is created **executable**
+    When ``venv`` is set the fake launcher is created at the path
+    :func:`live_target.target_bin` names for this platform (``.venv/bin/kirocrew``,
+    or ``.venv/Scripts/kirocrew.exe`` on Windows) and is **executable**
     (``venv_exec=True``, the realistic provisioned state that passes the make-live
     exec-bit gate); pass ``venv_exec=False`` to simulate a present-but-non-executable
     binary (the ``venv_not_executable`` case)."""
     wt = tmp_path / "kirocrew-wt-feat"
     wt.mkdir(parents=True, exist_ok=True)
     if venv:
-        vb = wt / ".venv" / "bin"
-        vb.mkdir(parents=True, exist_ok=True)
-        kcbin = vb / "kirocrew"
+        kcbin = live_mod.live_target.target_bin(wt)
+        kcbin.parent.mkdir(parents=True, exist_ok=True)
         kcbin.write_text("#!/bin/sh\n")
         kcbin.chmod(0o755 if venv_exec else 0o644)
     if dist:

@@ -254,6 +254,37 @@ async def test_make_live_missing_venv(monkeypatch, tmp_path):
     assert "Provision" in res["error"]
 
 
+def _windows_target_bin(checkout: Path) -> Path:
+    """``live_target.target_bin``'s answer on a Windows host."""
+    return checkout / ".venv" / "Scripts" / "kirocrew.exe"
+
+
+@pytest.mark.asyncio
+async def test_make_live_checks_the_venv_entry_point_live_target_runs(monkeypatch, tmp_path):
+    """The venv gate looks where the pointer write and the cutover look.
+
+    A Windows venv has ``.venv/Scripts/kirocrew.exe`` and no ``.venv/bin``, and
+    ``live_target.target_bin`` names that file there. Make Live must accept such a
+    provisioned worktree, and name that file when it is missing, rather than
+    demanding a ``.venv/bin/kirocrew`` no Windows venv has.
+    """
+    monkeypatch.setattr(live_mod.live_target, "target_bin", _windows_target_bin)
+
+    wt = _mk_make_live_wt(tmp_path, venv=False, dist=True)
+    launcher = _windows_target_bin(wt)
+    launcher.parent.mkdir(parents=True)
+    launcher.write_text("")
+    launcher.chmod(0o755)
+    _stub_make_live(monkeypatch, wt)
+    res = await mod._make_live(str(wt), dry_run=True)
+    assert res["ok"] is True and res.get("dry_run") is True, res
+
+    launcher.unlink()
+    res = await mod._make_live(str(wt), dry_run=True)
+    assert res["ok"] is False and res["code"] == "missing_venv"
+    assert str(Path(".venv", "Scripts", "kirocrew.exe")) in res["error"]
+
+
 @pytest.mark.asyncio
 @_POSIX_ONLY
 async def test_make_live_venv_not_executable(monkeypatch, tmp_path):
