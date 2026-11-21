@@ -539,19 +539,22 @@ def _display_redactor(text: str) -> str:
 # changes its session's approval mode.
 _NATIVE_BANG_COMMANDS: frozenset[str] = THREAD_SWITCH_COMMANDS | {"!trust"}
 
-# Mapping of bang commands to their /kirocrew slash equivalents. None: not
-# deprecated, so no notice: the bang acts on the thread it is typed in (`!voice on`),
-# which a slash command cannot name.
+# The bang commands, each mapped to the /kirocrew slash command a deprecation
+# notice names as its replacement. A value is a sub-command of
+# ``events_slash.SLASH_REGISTRY``. None: the bang acts on the thread it is typed
+# in (`!voice on`, `!stop`), and a slash command arrives with no thread, so there
+# is no replacement and the bang is not deprecated. ``!ta`` sets this thread's
+# agent, while ``/kirocrew agent`` sets the default agent for every conversation.
 _BANG_TO_SLASH: dict[str, str | None] = {
     "!yolo": "/kirocrew yolo",
-    "!stop": "/kirocrew stop",
+    "!stop": None,
     "!voice": None,
     "!agent": "/kirocrew agent",
     "!dashboard": "/kirocrew dashboard",
-    "!ta": "/kirocrew agent",
+    "!ta": None,
     # "!allowlist" removed — multi-user access disabled for security
-    "!channel": "/kirocrew channel",
-    "!link-to-dashboard": "/kirocrew link-to-dashboard",
+    "!channel": "/kirocrew channels",
+    "!link-to-dashboard": None,
     "!restart": "/kirocrew restart",
 }
 
