@@ -47,12 +47,13 @@ Only the owner (set via `KIROCREW_OWNER_ID`) can use these:
 `!allowlist` and `/kirocrew @user` are not accepted while access is owner-only, and
 `slack.allowed_users` in config has no effect.
 
-The `!` commands still work. `!yolo`, `!agent`, `!dashboard`, `!channel` and
-`!restart` are deprecated in favour of their `/kirocrew` slash commands below
-(`!channel` as `/kirocrew channels`), and each use posts a short note naming the
-slash form. `!ta`, `!stop`, `!link-to-dashboard` and `!voice` are not: they act on
-the thread they are typed in, which a slash command cannot name, and `!voice global
-on/off` works when the `/kirocrew` command is turned off.
+The `!` commands still work. `!yolo`, `!agent`, `!dashboard` and `!restart` are
+deprecated in favour of their `/kirocrew` slash commands below, and each use posts a
+short note naming the slash form. `!ta`, `!stop`, `!link-to-dashboard` and `!voice`
+are not: they act on the thread they are typed in, which a slash command cannot name,
+and `!voice global on/off` works when the `/kirocrew` command is turned off. `!channel`
+is not either: `/kirocrew channels` sets a channel's activation and agent, but not
+its Bot, its Conductor or the bare `!channel` status line.
 
 ## Commands for All Allowed Users
 

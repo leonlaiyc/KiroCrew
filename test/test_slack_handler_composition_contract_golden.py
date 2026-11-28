@@ -987,14 +987,14 @@ SCENARIOS = {
 #: scenario sends, audits, counts or asks of the session manager changes its digest; the
 #: failure prints the transcript it produced.
 _GOLDEN_DIGESTS: dict[str, str] = {
-    "agent_commands": "f635675aa5183e9075bf43d40848d9a1bf76d071eea608e82e8f3b50a4da2290",
+    "agent_commands": "89593f85382c02728e9c76432daadb3f78a710bd00751853de777bc83caa628a",
     "append_refused_then_rotated": "c95e7b182236fb08c406547f52da2b229cd455298bb1580b5221ce1123185d2a",
     "auto_approval_mode": "646a56b8ee0e60586a652c83a53f6a02afa54493f8bf81b895d8767b35314ee4",
     "builders_and_filters": "c3588c1a8b9e0dbb2cf4c8ac9e551ce5ce6c71c1a46bd07bf3e29ca6c9379cec",
     "cancelled_messages": "ecbdff98df1658e87972dc20679d6c3eb80d050a383a74f39f4ee06478c68c3a",
     "cancelled_stop_reason": "a24c47eb133c63a44845abb8afaf8d25134dbac28e52823a8dcb22c5ee3124e8",
     "cmd_allowed_denied": "0802fc63efe6e37f62e532419b17548240110c89100b8b4925703f80306e2621",
-    "cmd_allowlist_and_channel": "a20e2abaa66c1e03acf0106fc72b5770e4f8248de82b73b811d2b3cf29589a83",
+    "cmd_allowlist_and_channel": "1bea4c65346ba5fa30c5ef547f12a3d239a4c2bfbccee0eca84d211649e589e1",
     "cmd_compact": "b70200b397f2c31b14e23658e410ed24509d3db9a8581262cd721a2892793431",
     "cmd_dashboard_bad_duration": "38a7cb5332a1ba5ff255ec3303f56379bdd35ad259fede729cbba8f807d1b162",
     "cmd_link_to_dashboard_unavailable": "9628fc7bd66c5a905293bf809bce1576f3c596d58f85373fc8ea7354169fdca3",

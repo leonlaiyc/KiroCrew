@@ -545,6 +545,8 @@ _NATIVE_BANG_COMMANDS: frozenset[str] = THREAD_SWITCH_COMMANDS | {"!trust"}
 # in (`!voice on`, `!stop`), and a slash command arrives with no thread, so there
 # is no replacement and the bang is not deprecated. ``!ta`` sets this thread's
 # agent, while ``/kirocrew agent`` sets the default agent for every conversation.
+# ``!channel`` also sets a channel's Bot or Conductor and shows its status, which
+# the ``/kirocrew channels`` modal cannot, so it is not deprecated either.
 _BANG_TO_SLASH: dict[str, str | None] = {
     "!yolo": "/kirocrew yolo",
     "!stop": None,
@@ -553,7 +555,7 @@ _BANG_TO_SLASH: dict[str, str | None] = {
     "!dashboard": "/kirocrew dashboard",
     "!ta": None,
     # "!allowlist" removed — multi-user access disabled for security
-    "!channel": "/kirocrew channels",
+    "!channel": None,
     "!link-to-dashboard": None,
     "!restart": "/kirocrew restart",
 }
