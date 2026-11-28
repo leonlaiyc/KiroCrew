@@ -1,0 +1,115 @@
+name: scratch-claude-43988
+on:
+  push:
+    branches: ["scratch/claude-43988-race"]
+permissions:
+  contents: read
+env:
+  BASE: b86953f97baffc67ac7f55c1da4f565141340d75
+  FIX: 571b938ce04a3f397b714c457e65e505f49c2e39
+jobs:
+  race:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+      - name: pin the exact head and base
+        run: |
+          set -euo pipefail
+          git fetch --no-tags https://github.com/kirodotdev/KiroCrew.git "$BASE"
+          git checkout --detach "$FIX"
+          test "$(git rev-parse HEAD)" = "$FIX"
+          test "$(git merge-base HEAD "$BASE")" = "$BASE"
+          git diff --stat "$BASE" "$FIX"
+      - name: install
+        run: uv pip install --system -e ".[voice]" --group dev
+      - name: write the throwaway race plugin (outside the repo)
+        run: |
+          mkdir -p /tmp/racep
+          cat > /tmp/racep/race_plugin.py <<'PY'
+          """Throwaway: hold the orphan's zombie, then reap it between a cleanup's two reads."""
+          import builtins, ctypes, os, sys
+
+          LOG = "/tmp/racep/reaped.log"
+          CLEANUPS = {"test_a_timed_out_git_read_takes_its_whole_group_with_it",
+                      "test_teardown_reaps_process_group"}
+
+          def _reap(pid, where):
+              try:
+                  os.waitpid(pid, 0)
+              except ChildProcessError:
+                  return
+              with builtins.open(LOG, "a") as fh:
+                  fh.write(f"{where} reaped {pid}\n")
+
+          def pytest_configure(config):
+              libc = ctypes.CDLL(None, use_errno=True)
+              assert libc.prctl(36, 1, 0, 0, 0) == 0  # PR_SET_CHILD_SUBREAPER
+              real_open = builtins.open
+
+              def racing_open(file, *a, **k):
+                  f1, f2 = sys._getframe(1), sys._getframe(2)
+                  if (isinstance(file, str) and file.startswith("/proc/") and file.endswith("/stat")
+                          and f1.f_code.co_name == "_alive" and f2.f_code.co_name in CLEANUPS):
+                      _reap(int(file.split("/")[2]), "_alive")
+                  return real_open(file, *a, **k)
+
+              builtins.open = racing_open
+              from kiro_crew import platform_compat as pc
+              real_zombie = pc.pid_is_zombie
+
+              def racing_zombie(pid, *a, **k):
+                  f1, f2 = sys._getframe(1), sys._getframe(2)
+                  if f1.f_code.co_name == "_gone" and f2.f_code.co_name in CLEANUPS:
+                      _reap(pid, "_gone")
+                  return real_zombie(pid, *a, **k)
+
+              pc.pid_is_zombie = racing_zombie
+          PY
+      - name: base, forced race (expect ProcessLookupError)
+        run: |
+          set -uo pipefail
+          git checkout -q --detach "$BASE"; rm -f /tmp/racep/reaped.log
+          PYTHONPATH=/tmp/racep python -m pytest -n0 -p no:cacheprovider -p race_plugin -q -o addopts="" \
+            "test/test_remote_command_lifetime.py::test_a_timed_out_git_read_takes_its_whole_group_with_it" \
+            "test/test_mcp_discovery_probe_stdio.py::TestProbeGroupReap::test_teardown_reaps_process_group" 2>&1 | tee /tmp/base.txt
+          rc=${PIPESTATUS[0]}
+          cat /tmp/racep/reaped.log
+          test "$rc" -ne 0
+          test "$(grep -c 'ProcessLookupError' /tmp/base.txt)" -ge 2
+          test "$(wc -l < /tmp/racep/reaped.log)" -eq 2
+      - name: fix, forced race (expect pass)
+        run: |
+          set -euo pipefail
+          git checkout -q --detach "$FIX"; rm -f /tmp/racep/reaped.log
+          PYTHONPATH=/tmp/racep python -m pytest -n0 -p no:cacheprovider -p race_plugin -q -o addopts="" \
+            "test/test_remote_command_lifetime.py::test_a_timed_out_git_read_takes_its_whole_group_with_it" \
+            "test/test_mcp_discovery_probe_stdio.py::TestProbeGroupReap::test_teardown_reaps_process_group"
+          cat /tmp/racep/reaped.log
+          test "$(wc -l < /tmp/racep/reaped.log)" -eq 2
+      - name: fix, both files unforced
+        run: |
+          git checkout -q --detach "$FIX"
+          python -m pytest -n0 -p no:cacheprovider -q -o addopts="" test/test_remote_command_lifetime.py test/test_mcp_discovery_probe_stdio.py
+  semgrep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+      - run: |
+          set -euo pipefail
+          git fetch --no-tags https://github.com/kirodotdev/KiroCrew.git "$BASE"
+          git checkout --detach "$FIX"
+          test "$(git rev-parse HEAD)" = "$FIX"
+      - run: uv tool run --from "semgrep==1.78.0" semgrep scan --config semgrep/ --baseline-commit "$BASE" --error
