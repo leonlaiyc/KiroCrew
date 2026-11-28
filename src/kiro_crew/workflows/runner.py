@@ -895,7 +895,10 @@ class _RunContext:
             tool = shown
             if timer is not None:
                 return  # the pending send carries this call
+            # Capped at one interval: on a clock that did not move since ``send``
+            # (Windows steps ``monotonic`` by about 15.6 ms), the sum rounds above it.
             wait = 0.0 if sent_at is None else sent_at + PROGRESS_EVERY_SECS - time.monotonic()
+            wait = min(wait, PROGRESS_EVERY_SECS)
             if wait <= 0:
                 send()
             else:

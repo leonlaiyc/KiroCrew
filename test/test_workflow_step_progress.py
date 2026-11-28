@@ -9,6 +9,7 @@ the call settles. The run tree shows the tool on a running row.
 from __future__ import annotations
 
 import asyncio
+from types import SimpleNamespace
 from typing import Any
 
 import pytest
@@ -164,6 +165,32 @@ async def test_a_newer_tool_call_is_sent_on_a_timer_when_the_step_then_hangs(
         (e.data["turns"], e.data["last_tool"]) for e in res.events if e.type == "agent_progress"
     ] == [(1, "A"), (3, "C")]
     assert len(timers) == 1 and 0 < timers[0][0] <= runner_mod.PROGRESS_EVERY_SECS
+
+
+async def test_a_timer_never_waits_past_one_interval_on_a_clock_that_did_not_move(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # A coarse clock (Windows) can return one reading for the send and the next
+    # call; at this reading, reading + interval - reading rounds above the interval.
+    frozen = 8175.718
+    assert frozen + runner_mod.PROGRESS_EVERY_SECS - frozen > runner_mod.PROGRESS_EVERY_SECS
+    timers = _progress_timers(monkeypatch)
+
+    async def fn(_prompt: str, opts: dict) -> str:
+        with monkeypatch.context() as clock:
+            clock.setattr(runner_mod, "time", SimpleNamespace(monotonic=lambda: frozen))
+            opts["_on_progress"]("A")
+            opts["_on_progress"]("B")
+        for _delay, _callback, handle in timers:
+            handle.cancel()
+        return "done"
+
+    res = await WorkflowRunner(agent_fn=fn, audit=lambda *a, **k: None).run(
+        _ONE_STEP, run_id="wf_t", now="2026-11-25T00:00:00Z"
+    )
+
+    assert res.ok, res.error
+    assert [delay for delay, _callback, _handle in timers] == [runner_mod.PROGRESS_EVERY_SECS]
 
 
 async def test_a_pending_progress_is_cancelled_when_the_call_settles(
