@@ -76,4 +76,3 @@ async def test_a_bang_with_no_full_replacement_posts_no_deprecation_notice(
 
     ran.assert_awaited_once()
     assert _notices(slack) == []
-
