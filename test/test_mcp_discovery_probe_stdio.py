@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import asyncio
 import base64
+import contextlib
 import json
 import logging
 import os
@@ -1230,7 +1231,9 @@ class TestProbeGroupReap:
             )
         finally:
             if not _gone(gc_pid):
-                platform_compat.kill_pid(gc_pid, platform_compat.SIGKILL)
+                # Init can reap the orphan between _gone's two reads, which reads as not gone.
+                with contextlib.suppress(ProcessLookupError):
+                    platform_compat.kill_pid(gc_pid, platform_compat.SIGKILL)
         assert _gone(gc_pid)
 
     @pytest.mark.asyncio

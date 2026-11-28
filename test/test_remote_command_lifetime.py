@@ -1,5 +1,6 @@
 """A timed-out or retired guest command cannot leave its process group running."""
 
+import contextlib
 import os
 import signal
 import subprocess
@@ -201,7 +202,9 @@ def test_a_timed_out_git_read_takes_its_whole_group_with_it(tmp_path):
         _wait_dead(pid)
     finally:
         if _alive(pid):
-            os.kill(pid, signal.SIGKILL)
+            # Init adopts the orphan and can reap it between _alive's two reads.
+            with contextlib.suppress(ProcessLookupError):
+                os.kill(pid, signal.SIGKILL)
 
 
 def test_stdio_retirement_unwinds_and_restores_signal_handler(tmp_path, monkeypatch):
