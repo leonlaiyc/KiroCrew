@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { renderWithProviders, createTestStore } from './helpers'
+import { renderWithProviders, createTestStore, createConnectedTestStore } from './helpers'
 import { AddInstanceForm } from '../pages/settings/InstancesPanel'
 import { RemoteCrewPanel } from '../pages/settings/RemoteCrewPanel'
 import { prefillCrewAddForm } from '../store/instancesSlice'
@@ -109,7 +109,7 @@ describe('add form starting connection method', () => {
     platformEnv.value = 'windows'
     vi.mocked(api.addInstance).mockResolvedValue({} as never)
     const u = userEvent.setup()
-    const { store } = renderWithProviders(<AddInstanceForm onAdded={() => {}} />)
+    const { store } = renderWithProviders(<AddInstanceForm onAdded={() => {}} />, { store: createConnectedTestStore() })
     await u.click(screen.getByRole('combobox', { name: 'Connection method' }))
     await u.click(screen.getByRole('option', { name: new RegExp(SSH) }))
     await u.type(screen.getByLabelText('Name'), 'box')

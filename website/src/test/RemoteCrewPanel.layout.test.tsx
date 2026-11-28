@@ -136,7 +136,7 @@ describe('Remote Crew sections', () => {
 describe('Add Crew modal', () => {
   it('offers the two ways to add a Crew, each reaching today\'s form', async () => {
     const u = userEvent.setup()
-    renderWithProviders(<RemoteCrewPanel />)
+    renderWithProviders(<RemoteCrewPanel />, { store: createConnectedTestStore() })
 
     // No add or launch form on the page itself.
     await screen.findByText('build-farm')

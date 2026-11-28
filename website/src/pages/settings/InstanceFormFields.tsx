@@ -18,6 +18,8 @@ import { fmtList } from '../../i18n/format'
 import { i18nT } from '../../i18n/t'
 import { Trans } from 'react-i18next'
 import { useGatewayPlatform, type GatewayPlatform } from '../../hooks/useGatewayPlatform'
+import { useConnected } from '../../hooks/useConnected'
+import { offlineProps } from '../../utils/offline'
 
 // Re-exported so the form's existing consumers keep one import site, while the
 // shapes themselves live in a neutral module the store can read without
@@ -406,6 +408,9 @@ export function EditInstanceForm({
     onSuccess: onSaved,
   })
   const savePending = saveMutation.isPending
+  // Saving writes to the gateway, so it is refused while the dashboard is offline.
+  // Cancel, Stop waiting and "Use my edits anyway" write nothing and stay live.
+  const online = useConnected()
   const stale = !!externallyChanged?.length && form.dirty
   // An abort is never an API rejection: it is either this form unmounting or the
   // user choosing Stop waiting on a hung save. The latter keeps the draft open and
@@ -485,7 +490,8 @@ export function EditInstanceForm({
             setStoppedSave(false)
             saveMutation.mutate()
           }}
-          disabled={savePending || !form.valid}
+          disabled={savePending || !form.valid || !online}
+          {...offlineProps(online, i18nT('utils.offline.manage_crews'), i18nT('pages.settings.remoteCrewPanel.save_changes'))}
         >
           {savePending
             ? i18nT('pages.settings.remoteCrewPanel.saving')

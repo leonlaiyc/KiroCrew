@@ -32,6 +32,8 @@ import { WARM_SET_CAP_AUTO_CEILING, usesSsmTransport } from '../../utils/remoteC
 import { Card, Btn } from '../../components/ui'
 import { useAppDispatch, useAppSelector, useAppStore } from '../../store'
 import { useGatewayPlatform } from '../../hooks/useGatewayPlatform'
+import { useConnected } from '../../hooks/useConnected'
+import { offlineProps } from '../../utils/offline'
 import { removeWarm, setCrewAddForm } from '../../store/instancesSlice'
 
 import { i18nT } from '../../i18n/t'
@@ -150,6 +152,8 @@ export function AddInstanceForm({ onAdded }: { onAdded: () => void }) {
     dispatch(setCrewAddForm(isBlankInstanceForm(form.values, blank) ? null : { ...form.values }))
   }, [form.values, blank, dispatch])
 
+  // Adding writes to the gateway, so it is refused while the dashboard is offline.
+  const online = useConnected()
   const addMutation = useMutation({
     mutationFn: () => api.addInstance(form.body()),
     onSuccess: () => {
@@ -192,7 +196,8 @@ export function AddInstanceForm({ onAdded }: { onAdded: () => void }) {
         askAgent
       />
       <div className="mt-3">
-        <Btn primary onClick={() => addMutation.mutate()} disabled={addMutation.isPending || !form.valid}>
+        <Btn primary onClick={() => addMutation.mutate()} disabled={addMutation.isPending || !form.valid || !online}
+          {...offlineProps(online, i18nT('utils.offline.manage_crews'), i18nT('pages.settings.instancesPanel.add_remote_crew'))}>
           {addMutation.isPending ? i18nT('pages.settings.instancesPanel.adding') : i18nT('pages.settings.instancesPanel.add_remote_crew')}
         </Btn>
       </div>

@@ -561,7 +561,7 @@ describe('RemoteCrewPanel', () => {
       return rows[0]
     })
     const u = userEvent.setup()
-    renderWithProviders(<RemoteCrewPanel />)
+    renderWithProviders(<RemoteCrewPanel />, { store: createConnectedTestStore() })
 
     await openRowMenu(u, /details for dev-box-1/i)
     await u.click(await screen.findByRole('button', { name: /Edit settings/i }))
@@ -593,7 +593,7 @@ describe('RemoteCrewPanel', () => {
     vi.mocked(api.cloudLaunches).mockResolvedValue({ jobs: [] })
     vi.mocked(api.updateInstance).mockRejectedValue(new ApiError(409, 'name is already in use'))
     const u = userEvent.setup()
-    renderWithProviders(<RemoteCrewPanel />)
+    renderWithProviders(<RemoteCrewPanel />, { store: createConnectedTestStore() })
 
     await openRowMenu(u, /details for dev-box-1/i)
     await u.click(await screen.findByRole('button', { name: /Edit settings/i }))
@@ -1550,7 +1550,7 @@ describe('RemoteCrewPanel', () => {
       ;vi.mocked(api.listInstances).mockResolvedValue({ active: true, warm_set_cap: 5, instances: [WITH_TTL] } as never)
       ;vi.mocked(api.instanceStatus).mockResolvedValue(DIAGNOSED as never)
       const u = userEvent.setup()
-      const first = renderWithProviders(<RemoteCrewPanel />)
+      const first = renderWithProviders(<RemoteCrewPanel />, { store: createConnectedTestStore() })
 
       await screen.findByText('Nimbus')
       await openRowMenu(u)

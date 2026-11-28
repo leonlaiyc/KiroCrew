@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { act, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { renderWithProviders, createTestStore } from './helpers'
+import { renderWithProviders, createTestStore, createConnectedTestStore } from './helpers'
 import { useAppSelector } from '../store'
 import { RemoteCrewPanel } from '../pages/settings/RemoteCrewPanel'
 import { prefillCrewAddForm, setCrewAddForm } from '../store/instancesSlice'
@@ -94,7 +94,7 @@ describe('Remote Crew add form opened by an add link', () => {
   it('adds the crew only on Add, with the link values, and then drops the link', async () => {
     const u = userEvent.setup()
     vi.mocked(api.addInstance).mockResolvedValue({} as never)
-    const store = createTestStore()
+    const store = createConnectedTestStore()
     store.dispatch(prefillCrewAddForm(link))
     renderWithProviders(<RemoteCrewPanel />, { store })
 
@@ -125,7 +125,7 @@ describe('Remote Crew add form opened by an add link', () => {
     const u = userEvent.setup()
     let finishAdd: (value: unknown) => void = () => {}
     vi.mocked(api.addInstance).mockReturnValue(new Promise(resolve => { finishAdd = resolve }) as never)
-    const store = createTestStore()
+    const store = createConnectedTestStore()
     store.dispatch(prefillCrewAddForm(link))
     renderWithProviders(<KeyedPanel />, { store })
 
@@ -173,7 +173,7 @@ describe('Remote Crew add form opened by an add link', () => {
 
   it('renders the add form unchanged when no link was opened', async () => {
     const scrolled = vi.spyOn(HTMLElement.prototype, 'scrollIntoView').mockImplementation(() => {})
-    renderWithProviders(<RemoteCrewPanel />)
+    renderWithProviders(<RemoteCrewPanel />, { store: createConnectedTestStore() })
     expect(await screen.findByRole('button', { name: 'Add Crew' })).toBeInTheDocument()
     // Only a link opens the add form on its own.
     expect(screen.queryByRole('dialog')).toBeNull()

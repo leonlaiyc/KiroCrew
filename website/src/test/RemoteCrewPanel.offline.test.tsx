@@ -3,7 +3,9 @@
  * refused while the dashboard is offline. Connect, Disconnect, the on/off
  * switch, Start, Stop and the armed Delete / Remove dim, say why on the control
  * itself, and send no request; arming a confirm still works, since it writes
- * nothing. Online the same row's writes go through.
+ * nothing. Save changes on a row's edit form and Add remote crew on the add
+ * form refuse the same way, while opening either form stays live. Online the
+ * same row's writes go through.
  *
  * The panel runs real against a mocked api, so a refused click is proven by
  * the api mock never being called.
@@ -169,6 +171,39 @@ describe('a crew row while the gateway is offline', () => {
     expect(api.cloudStop).not.toHaveBeenCalled()
     expect(api.cloudStart).not.toHaveBeenCalled()
     expect(api.cloudDestroy).not.toHaveBeenCalled()
+  })
+})
+
+describe('the edit and add forms while the gateway is offline', () => {
+  it('refuses Save changes on a crew row\'s edit form, while Cancel stays live', async () => {
+    renderWithProviders(<RemoteCrewPanel />)
+    const row = await openRow(HAND)
+
+    // Opening the editor writes nothing, so it stays live; its Save refuses.
+    fireEvent.click(within(row).getByRole('button', { name: 'Edit settings' }))
+    const form = within(await screen.findByRole('group', { name: `Edit ${HAND}` }))
+    fireEvent.change(form.getByRole('textbox', { name: 'Name' }), { target: { value: 'renamed box' } })
+    expectRefused(form.getByRole('button', { name: offlineName('Save changes') }))
+    expect(form.getByRole('button', { name: 'Cancel' })).toBeEnabled()
+
+    await act(async () => {})
+    expect(api.updateInstance).not.toHaveBeenCalled()
+  })
+
+  it('refuses Add remote crew on the add form', async () => {
+    renderWithProviders(<RemoteCrewPanel />)
+    await screen.findByText(HAND)
+
+    // Opening the add form writes nothing, so it stays live; its Add refuses.
+    fireEvent.click(screen.getByRole('button', { name: 'Add Crew' }))
+    fireEvent.click(within(screen.getByRole('dialog', { name: 'Add a Crew' })).getByRole('button', { name: /Connect a machine you have/ }))
+    const form = within(screen.getByRole('dialog', { name: 'Connect a machine you have' }))
+    fireEvent.change(await form.findByRole('textbox', { name: 'Name' }), { target: { value: 'new box' } })
+    fireEvent.change(form.getByRole('textbox', { name: 'SSH host / alias' }), { target: { value: 'new.example' } })
+    expectRefused(form.getByRole('button', { name: offlineName('Add remote crew') }))
+
+    await act(async () => {})
+    expect(api.addInstance).not.toHaveBeenCalled()
   })
 })
 

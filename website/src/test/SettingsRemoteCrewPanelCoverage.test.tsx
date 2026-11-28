@@ -961,7 +961,7 @@ describe('RemoteCrewPanel — editing a crew', () => {
     // The host changed, so the save reconnects on the new coordinates.
     vi.mocked(api.connectInstance).mockResolvedValue({ instance_id: 'm1', state: 'connected', local_port: 7999, token: 't' })
     const u = setup()
-    renderWithProviders(<RemoteCrewPanel />)
+    renderWithProviders(<RemoteCrewPanel />, { store: createConnectedTestStore() })
 
     await openRowMenu(u)
     await u.click(await screen.findByRole('button', { name: /Edit settings/i }))
@@ -990,7 +990,7 @@ describe('RemoteCrewPanel — editing a crew', () => {
     vi.mocked(api.listInstances).mockResolvedValue(list([MANUAL_INSTANCE]))
     vi.mocked(api.updateInstance).mockRejectedValue(new ApiError(400, 'invalid ssh_host'))
     const u = setup()
-    renderWithProviders(<RemoteCrewPanel />)
+    renderWithProviders(<RemoteCrewPanel />, { store: createConnectedTestStore() })
 
     await openRowMenu(u)
     await u.click(await screen.findByRole('button', { name: /Edit settings/i }))
@@ -1011,7 +1011,7 @@ describe('RemoteCrewPanel — editing a crew', () => {
     vi.mocked(api.listInstances).mockResolvedValue(list([withBin]))
     vi.mocked(api.updateInstance).mockResolvedValue({ ...withBin, remote_bin: '' })
     const u = setup()
-    renderWithProviders(<RemoteCrewPanel />)
+    renderWithProviders(<RemoteCrewPanel />, { store: createConnectedTestStore() })
 
     await openRowMenu(u)
     await u.click(await screen.findByRole('button', { name: /Edit settings/i }))
@@ -1030,7 +1030,7 @@ describe('RemoteCrewPanel — editing a crew', () => {
     vi.mocked(api.listInstances).mockResolvedValue(list([live]))
     vi.mocked(api.updateInstance).mockResolvedValue({ ...live, remote_port: 7999 })
     const u = setup()
-    renderWithProviders(<RemoteCrewPanel />)
+    renderWithProviders(<RemoteCrewPanel />, { store: createConnectedTestStore() })
 
     await openRowMenu(u)
     await u.click(await screen.findByRole('button', { name: /Edit settings/i }))
@@ -1054,7 +1054,7 @@ describe('RemoteCrewPanel — editing a crew', () => {
     vi.mocked(api.cloudLaunches).mockResolvedValue({ jobs: [DONE_JOB] })
     vi.mocked(api.updateInstance).mockResolvedValue(CLOUD_INSTANCE)
     const u = setup()
-    renderWithProviders(<RemoteCrewPanel />)
+    renderWithProviders(<RemoteCrewPanel />, { store: createConnectedTestStore() })
 
     await openRowMenu(u, /details for Kiro Crew Cloud/i)
     await u.click(await screen.findByRole('button', { name: /Edit settings/i }))
@@ -1079,7 +1079,7 @@ describe('RemoteCrewPanel — editing a crew', () => {
     // or a TTL the token minter cannot read — so Save is gated instead.
     vi.mocked(api.listInstances).mockResolvedValue(list([MANUAL_INSTANCE]))
     const u = setup()
-    renderWithProviders(<RemoteCrewPanel />)
+    renderWithProviders(<RemoteCrewPanel />, { store: createConnectedTestStore() })
 
     await openRowMenu(u)
     await u.click(await screen.findByRole('button', { name: /Edit settings/i }))
@@ -1123,7 +1123,7 @@ describe('RemoteCrewPanel — editing a crew', () => {
     vi.mocked(api.listInstances).mockResolvedValue(list([MANUAL_INSTANCE]))
     vi.mocked(api.updateInstance).mockResolvedValue({ ...MANUAL_INSTANCE, remote_port: 7999 })
     const u = setup()
-    renderWithProviders(<RemoteCrewPanel />)
+    renderWithProviders(<RemoteCrewPanel />, { store: createConnectedTestStore() })
 
     await openRowMenu(u)
     await u.click(await screen.findByRole('button', { name: /Edit settings/i }))
@@ -1147,7 +1147,7 @@ describe('RemoteCrewPanel — editing a crew', () => {
     vi.mocked(api.listInstances).mockImplementation(async () => list(rows))
     vi.mocked(api.updateInstance).mockResolvedValue(MANUAL_INSTANCE)
     const u = setup()
-    renderWithProviders(<RemoteCrewPanel />)
+    renderWithProviders(<RemoteCrewPanel />, { store: createConnectedTestStore() })
 
     await openRowMenu(u)
     await u.click(await screen.findByRole('button', { name: /Edit settings/i }))
@@ -1190,7 +1190,7 @@ describe('RemoteCrewPanel — editing a crew', () => {
     vi.mocked(api.cloudLaunches).mockResolvedValue({ jobs: [] })
     vi.mocked(api.updateInstance).mockResolvedValue({ ...ssm, aws_profile: 'Fixed' })
     const u = setup()
-    renderWithProviders(<RemoteCrewPanel />)
+    renderWithProviders(<RemoteCrewPanel />, { store: createConnectedTestStore() })
 
     await openRowMenu(u)
     await u.click(await screen.findByRole('button', { name: /Edit settings/i }))
@@ -1287,7 +1287,7 @@ describe('RemoteCrewPanel — editing a crew', () => {
       () => new Promise<InstanceView>(() => {}),
     )
     const u = setup()
-    const view = renderWithProviders(<RemoteCrewPanel />)
+    const view = renderWithProviders(<RemoteCrewPanel />, { store: createConnectedTestStore() })
 
     try {
       await openRowMenu(u, /details for dev-box-1/i)
@@ -1326,7 +1326,7 @@ describe('RemoteCrewPanel — editing a crew', () => {
       () => new Promise(resolve => { resolveSave = resolve }),
     )
     const u = setup()
-    renderWithProviders(<RemoteCrewPanel />)
+    renderWithProviders(<RemoteCrewPanel />, { store: createConnectedTestStore() })
 
     await openRowMenu(u, /details for dev-box-1/i)
     await u.click(await screen.findByRole('button', { name: /Edit settings/i }))
@@ -1369,7 +1369,7 @@ describe('RemoteCrewPanel — editing a crew', () => {
       }),
     )
     const u = setup()
-    renderWithProviders(<RemoteCrewPanel />)
+    renderWithProviders(<RemoteCrewPanel />, { store: createConnectedTestStore() })
 
     await openRowMenu(u, /details for dev-box-1/i)
     await u.click(await screen.findByRole('button', { name: /Edit settings/i }))
@@ -1470,7 +1470,7 @@ describe('RemoteCrewPanel — editing a crew', () => {
     vi.mocked(api.listInstances).mockImplementation(async () => list(rows))
     vi.mocked(api.updateInstance).mockResolvedValue(MANUAL_INSTANCE)
     const u = setup()
-    renderWithProviders(<RemoteCrewPanel />)
+    renderWithProviders(<RemoteCrewPanel />, { store: createConnectedTestStore() })
 
     await openRowMenu(u, /details for dev-box-1/i)
     await u.click(await screen.findByRole('button', { name: /Edit settings/i }))
@@ -1586,7 +1586,7 @@ describe('RemoteCrewPanel — editing a crew', () => {
     vi.mocked(api.listInstances).mockImplementation(async () => list(rows))
     vi.mocked(api.updateInstance).mockResolvedValue(MANUAL_INSTANCE)
     const u = setup()
-    renderWithProviders(<RemoteCrewPanel />)
+    renderWithProviders(<RemoteCrewPanel />, { store: createConnectedTestStore() })
 
     await openRowMenu(u, /details for dev-box-1/i)
     await u.click(await screen.findByRole('button', { name: /Edit settings/i }))
@@ -1664,7 +1664,7 @@ describe('RemoteCrewPanel — editing a crew', () => {
     vi.mocked(api.listInstances).mockResolvedValue(list([MANUAL_INSTANCE, second]))
     vi.mocked(api.updateInstance).mockResolvedValue({ ...MANUAL_INSTANCE, ssh_host: 'fixed' } as never)
     const u = setup()
-    renderWithProviders(<RemoteCrewPanel />)
+    renderWithProviders(<RemoteCrewPanel />, { store: createConnectedTestStore() })
 
     await openRowMenu(u, /details for dev-box-1/i)
     await u.click(await screen.findByRole('button', { name: /Edit settings/i }))

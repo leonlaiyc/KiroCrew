@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { renderWithProviders } from './helpers'
+import { renderWithProviders, createConnectedTestStore } from './helpers'
 import { InstancesPanel, humanizeSecs } from '../pages/settings/InstancesPanel'
 
 vi.mock('../api/client', () => {
@@ -73,7 +73,7 @@ describe('InstancesPanel', () => {
 
   it('renders the empty state + Add form when no instances configured', async () => {
     ;vi.mocked(api.listInstances).mockResolvedValue({ active: true, instances: [], warm_set_cap: 5 })
-    renderWithProviders(<InstancesPanel />)
+    renderWithProviders(<InstancesPanel />, { store: createConnectedTestStore() })
     expect(await screen.findByText(/No remote crews configured yet/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Add remote crew' })).toBeInTheDocument()
   })
@@ -82,7 +82,7 @@ describe('InstancesPanel', () => {
     ;vi.mocked(api.listInstances).mockResolvedValue({ active: true, instances: [], warm_set_cap: 5 })
     ;vi.mocked(api.addInstance).mockResolvedValue({})
     const u = userEvent.setup()
-    renderWithProviders(<InstancesPanel />)
+    renderWithProviders(<InstancesPanel />, { store: createConnectedTestStore() })
 
     await screen.findByText(/No remote crews configured yet/i)
     await u.type(screen.getByPlaceholderText('Crew 1'), 'Nimbus')
@@ -112,7 +112,7 @@ describe('InstancesPanel', () => {
     ;vi.mocked(api.listInstances).mockResolvedValue({ active: true, instances: [], warm_set_cap: 5 })
     ;vi.mocked(api.addInstance).mockRejectedValue(new ApiError(400, 'name already in use'))
     const u = userEvent.setup()
-    const first = renderWithProviders(<InstancesPanel />)
+    const first = renderWithProviders(<InstancesPanel />, { store: createConnectedTestStore() })
 
     await screen.findByText(/No remote crews configured yet/i)
     await u.type(screen.getByPlaceholderText('Crew 1'), 'Nimbus')
@@ -161,7 +161,7 @@ describe('InstancesPanel', () => {
       ],
     })
     const u = userEvent.setup()
-    renderWithProviders(<InstancesPanel />)
+    renderWithProviders(<InstancesPanel />, { store: createConnectedTestStore() })
 
     // The form pre-fills the port a stock gateway actually binds, which is the
     // same port the existing crew uses.
@@ -203,7 +203,7 @@ describe('InstancesPanel', () => {
     ;vi.mocked(api.listInstances).mockResolvedValue({ active: true, instances: [], warm_set_cap: 5 })
     ;vi.mocked(api.addInstance).mockResolvedValue({})
     const u = userEvent.setup()
-    renderWithProviders(<InstancesPanel />)
+    renderWithProviders(<InstancesPanel />, { store: createConnectedTestStore() })
 
     const trigger = await screen.findByRole('combobox', { name: 'Connection method' })
     expect(screen.getByLabelText('Remote port')).toHaveValue('5476')
