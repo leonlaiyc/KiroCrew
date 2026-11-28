@@ -80,7 +80,7 @@ jobs:
           PYTHONPATH=/tmp/racep python -m pytest -n0 -p no:cacheprovider -p race_plugin -q -o addopts="" \
             "test/test_remote_command_lifetime.py::test_a_timed_out_git_read_takes_its_whole_group_with_it" \
             "test/test_mcp_discovery_probe_stdio.py::TestProbeGroupReap::test_teardown_reaps_process_group" 2>&1 | tee /tmp/base.txt
-          rc=${PIPESTATUS[0]}
+          rc=${PIPESTATUS[0]}; set -e
           cat /tmp/racep/reaped.log
           test "$rc" -ne 0
           test "$(grep -c 'ProcessLookupError' /tmp/base.txt)" -ge 2
