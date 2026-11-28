@@ -75,7 +75,7 @@ jobs:
           PY
       - name: base, forced race (expect ProcessLookupError)
         run: |
-          set -uo pipefail
+          set +e -uo pipefail
           git checkout -q --detach "$BASE"; rm -f /tmp/racep/reaped.log
           PYTHONPATH=/tmp/racep python -m pytest -n0 -p no:cacheprovider -p race_plugin -q -o addopts="" \
             "test/test_remote_command_lifetime.py::test_a_timed_out_git_read_takes_its_whole_group_with_it" \
