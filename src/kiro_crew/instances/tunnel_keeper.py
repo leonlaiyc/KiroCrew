@@ -138,12 +138,10 @@ async def keep_tunnel(
             finally:
                 for waiter in waiters:
                     waiter.cancel()
-            if stop.is_set():
-                await tunnel.stop()
-                return
         if stop.is_set():
-            # Asked to stop while the forward was still connecting: whatever
-            # start() had already spawned is torn down, never left behind.
+            # Asked to stop, while the forward was connecting or after it
+            # connected: whatever start() had already spawned is torn down,
+            # never left behind.
             await tunnel.stop()
             return
         attempt += 1

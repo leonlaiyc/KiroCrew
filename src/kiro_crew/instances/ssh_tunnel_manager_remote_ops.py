@@ -430,7 +430,7 @@ async def _update_then_restart(
     # cannot show the crew changed. That is unverified, not a success.
     if not after or not job.version_before:
         outcome = STATE_UNVERIFIED
-    elif job.version_before and after == job.version_before:
+    elif after == job.version_before:
         outcome = STATE_UNCHANGED
     else:
         outcome = STATE_SUCCEEDED

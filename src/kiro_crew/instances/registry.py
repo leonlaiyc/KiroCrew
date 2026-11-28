@@ -529,19 +529,6 @@ class Instance:
             except (TypeError, ValueError):
                 return default
 
-        def _as_epoch(value: object, default: float) -> float:
-            """Coerce a stored epoch second with this loader's own tolerance.
-
-            A file written before the reservation existed has no such key, and a
-            hand-edited one may hold anything, so an unreadable value reads as
-            "none outstanding" rather than raising out of the loader. The cost of
-            that is one port becoming allocatable early -- which is exactly the
-            behaviour before the field existed.
-            """
-            if isinstance(value, bool) or not isinstance(value, (int, float)):
-                return default
-            return default if float(value) < 0 else float(value)
-
         return cls(
             id=str(data.get("id", "")),
             name=str(data.get("name", "")),

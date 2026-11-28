@@ -1292,8 +1292,8 @@ def clear_late_marker_write(port: int) -> bool:
       happened, and a pid read taken BEFORE the write cannot substitute for it:
       the successor appears after that read, so the value it returns is this
       port's previous occupant, not its next one. Keeping a successor's marker
-      intact means guarding the WRITE, which is a change on the gateway boot
-      path rather than here.
+      intact is the WRITE's job, not this function's: :func:`write_marker`
+      declines while the pid record names another live gateway.
 
     An unreadable pid record answers False for the same reason: an owner that
     cannot be established is treated as somebody else's.
